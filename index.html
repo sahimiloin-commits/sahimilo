@@ -1,34 +1,207 @@
-SAHIMILO
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SahiMilo - Find best products and services near you. Apne area ka professional dhoondhiye.">
+  <title>SahiMilo | Find Local Professionals</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#home" aria-label="SahiMilo Home">
+        <span class="brand-mark">✓</span>
+        <span>Sahi<span>Milo</span></span>
+      </a>
+      <nav class="desktop-nav">
+        <a href="#about">About SahiMilo</a>
+        <a href="#services">Services</a>
+        <a href="#register">Register as Professional</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <a class="nav-whatsapp" href="https://wa.me/?text=Hello%20SahiMilo%2C%20mujhe%20ek%20professional%20chahiye." target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </header>
 
-Find best Products & Services near you
+  <main>
+    <section id="home" class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">LOCAL KAAM, SAHI PROFESSIONAL</div>
+          <h1>Apne area ka <span>professional</span> dhoondhiye.</h1>
+          <p class="hero-sub">Electrician, Plumber, AC Repair, Carpenter aur bahut kuch. Kaam batao, local professionals pao, directly call karo.</p>
 
-Apne area ka professional dhoondhiye
+          <div class="search-card">
+            <div class="step-label">1. Pehle kaam select karein</div>
+            <div class="field-row">
+              <label class="field">
+                <span>Category</span>
+                <select id="categorySelect">
+                  <option value="">Category select karein</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Service / Kaam</span>
+                <select id="serviceSelect" disabled>
+                  <option value="">Pehle category select karein</option>
+                </select>
+              </label>
+            </div>
+            <div class="field-row">
+              <label class="field full">
+                <span>Area / Pincode</span>
+                <input id="locationInput" type="text" placeholder="Jaise: Sitamarhi / 843301">
+              </label>
+            </div>
+            <button id="findBtn" class="primary-btn" type="button">Find Professionals <span>→</span></button>
+            <p class="tiny-note">Abhi pilot mode mein. Results aapke area mein listed professionals par depend karte hain.</p>
+          </div>
 
-Electrician
-Plumber
-AC Repair
-Carpenter
-Mason
-Mechanic
-Doctor
-Tutor
-Painter
-etc.
+          <div class="quick-actions">
+            <a class="action whatsapp" href="https://wa.me/?text=Hello%20SahiMilo%2C%20mujhe%20local%20professional%20chahiye." target="_blank" rel="noopener">
+              <span class="action-icon">💬</span>
+              <span><strong>WhatsApp karein</strong><small>Kaam + area bhejiye</small></span>
+            </a>
+            <a class="action call" href="tel:+919999999999">
+              <span class="action-icon">📞</span>
+              <span><strong>Call karein</strong><small>Help ke liye baat karein</small></span>
+            </a>
+          </div>
+        </div>
 
-[Aapko kya kaam hai?]
+        <div class="hero-visual" aria-hidden="true">
+          <div class="map-card">
+            <div class="map-top"><span>📍 Aapke area mein</span><span class="live-dot">● Live pilot</span></div>
+            <div class="map">
+              <div class="road r1"></div><div class="road r2"></div><div class="road r3"></div>
+              <div class="pin p1">⚡</div><div class="pin p2">🔧</div><div class="pin p3">❄️</div>
+              <div class="pin p4">🔨</div>
+              <div class="you">YOU</div>
+            </div>
+            <div class="map-footer"><strong>Local professionals</strong><span>Easy. Direct. Local.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-[Aapka area / Pincode]
+    <section id="results" class="results-section hidden">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">SAHIMILO RESULTS</div>
+            <h2>Available professionals</h2>
+            <p id="resultSummary">Aapke area ke professionals yahan dikhेंगे.</p>
+          </div>
+          <button id="resetBtn" class="secondary-btn" type="button">← Search again</button>
+        </div>
+        <div id="resultsGrid" class="results-grid"></div>
+        <div id="noResults" class="no-results hidden">
+          <div class="empty-icon">🔎</div>
+          <h3>Abhi professional nahi mila</h3>
+          <p>WhatsApp ya call karke SahiMilo team se available professional ke baare mein pooch sakte hain.</p>
+          <div class="empty-actions">
+            <a class="primary-btn" href="https://wa.me/?text=Hello%20SahiMilo%2C%20mere%20area%20mein%20professional%20chahiye." target="_blank" rel="noopener">WhatsApp SahiMilo</a>
+            <a class="secondary-btn" href="tel:+919999999999">Call SahiMilo</a>
+          </div>
+        </div>
+      </div>
+    </section>
 
-[Find Professionals]
+    <section id="services" class="section">
+      <div class="container">
+        <div class="section-heading centered">
+          <div>
+            <div class="eyebrow">POPULAR SERVICES</div>
+            <h2>Jo kaam chahiye, woh dhoondhiye</h2>
+            <p>Ghar, dukaan, vehicle, farm aur daily life ke local kaam ke professionals.</p>
+          </div>
+        </div>
+        <div id="serviceCards" class="service-grid"></div>
+      </div>
+    </section>
 
---------------------------------
+    <section id="how" class="section soft">
+      <div class="container">
+        <div class="section-heading centered">
+          <div>
+            <div class="eyebrow">HOW SAHIMILO WORKS</div>
+            <h2>Bas 3 simple steps</h2>
+          </div>
+        </div>
+        <div class="steps">
+          <div class="step"><div class="step-num">01</div><div class="step-icon">🔎</div><h3>Kaam batao</h3><p>Category, service aur apna area select karein.</p></div>
+          <div class="step"><div class="step-num">02</div><div class="step-icon">👨‍🔧</div><h3>Professional pao</h3><p>Available local professionals ki list dekhein.</p></div>
+          <div class="step"><div class="step-num">03</div><div class="step-icon">📞</div><h3>Directly call karo</h3><p>Professional se price, timing aur kaam directly final karein.</p></div>
+        </div>
+      </div>
+    </section>
 
-Need help?
+    <section id="register" class="section register-section">
+      <div class="container register-grid">
+        <div>
+          <div class="eyebrow">PROFESSIONALS KE LIYE</div>
+          <h2>SahiMilo par apna kaam list karein.</h2>
+          <p>Agar aap electrician, plumber, mechanic, tutor, carpenter, painter ya koi aur local service dete hain, SahiMilo par register karein.</p>
+          <ul class="check-list">
+            <li>Apne area ke customers tak pahunch</li>
+            <li>Apni service aur experience show karein</li>
+            <li>Customer se directly baat karein</li>
+          </ul>
+        </div>
+        <form id="registerForm" class="form-card">
+          <h3>Professional Registration</h3>
+          <p class="form-help">Pilot ke liye basic details submit karein.</p>
+          <label class="field"><span>Name *</span><input name="name" required placeholder="Aapka naam"></label>
+          <div class="field-row">
+            <label class="field"><span>Mobile *</span><input name="phone" required inputmode="tel" placeholder="10 digit mobile"></label>
+            <label class="field"><span>Experience</span><input name="experience" placeholder="Jaise 7 years"></label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span>Category *</span><select id="regCategory" name="category" required></select></label>
+            <label class="field"><span>Service *</span><select id="regService" name="service" required disabled></select></label>
+          </div>
+          <label class="field"><span>Area / Pincode *</span><input name="location" required placeholder="Jaise Parihar / 843324"></label>
+          <label class="field"><span>WhatsApp number</span><input name="whatsapp" inputmode="tel" placeholder="Optional"></label>
+          <button class="primary-btn" type="submit">Register on SahiMilo</button>
+          <p id="registerMessage" class="success-message hidden">Thanks! Registration details ready hain. Pilot mein inhe SahiMilo team verify karegi.</p>
+          <p class="tiny-note">Note: Is free version mein form data automatically database mein save nahi hota. Neeche diya setup guide Google Sheet/Form integration batata hai.</p>
+        </form>
+      </div>
+    </section>
 
-[WhatsApp SahiMilo]
+    <section id="about" class="section about-section">
+      <div class="container about-grid">
+        <div>
+          <div class="eyebrow">ABOUT SAHIMILO</div>
+          <h2>Local kaam ko simple banana.</h2>
+        </div>
+        <div>
+          <p>SahiMilo ek local marketplace hai jahan customers apne area ke professionals ko dhoondh sakte hain aur professionals ko local customers tak pahunchne ka mauka milta hai.</p>
+          <p>Customer professional se directly baat karke cost, timing aur work details final karta hai. SahiMilo ka focus simple discovery, clear information aur better local choice par hai.</p>
+        </div>
+      </div>
+    </section>
 
-[Call SahiMilo]
+    <section id="contact" class="section contact-section">
+      <div class="container contact-card">
+        <div><div class="eyebrow">NEED HELP?</div><h2>Kaam hai? SahiMilo se poochiye.</h2><p>Website par nahi mil raha? WhatsApp ya call karein.</p></div>
+        <div class="contact-actions">
+          <a class="primary-btn" href="https://wa.me/?text=Hello%20SahiMilo%2C%20mujhe%20help%20chahiye." target="_blank" rel="noopener">💬 WhatsApp</a>
+          <a class="secondary-btn" href="tel:+919999999999">📞 Call SahiMilo</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
---------------------------------
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div><a class="brand footer-brand" href="#home"><span class="brand-mark">✓</span><span>Sahi<span>Milo</span></span></a><p>Find best Products & Services near you.</p></div>
+      <div class="footer-links"><a href="#about">About</a><a href="#services">Services</a><a href="#register">Professionals</a><a href="#contact">Contact</a></div>
+      <div class="copyright">© <span id="year"></span> SahiMilo. Pilot version.</div>
+    </div>
+  </footer>
 
-Register as a Professional
+  <script src="script.js"></script>
+</body>
+</html>
