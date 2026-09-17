@@ -1,38 +1,27 @@
-# SahiMilo Website
+# SahiMilo Marketplace
 
-A mobile-first static MVP for SahiMilo, built with plain HTML, CSS and JavaScript.
+Supabase-connected marketplace for finding approved local professionals.
 
-## Files
+## Updated registration flow
 
-- `index.html` - website structure and content
-- `style.css` - responsive design
-- `script.js` - categories, services, search and sample professional results
+- Professionals register directly without OTP.
+- Every new profile is saved as \`pending\`.
+- Pending profiles do not appear in public search.
+- Admin logs in with email/password and approves profiles.
+- Only \`approved\` profiles marked \`verified_by_admin=true\` appear publicly.
 
-## Run locally
+## Required Supabase update
 
-Open `index.html` in a browser.
+Run \`supabase-update-remove-otp.sql\` once:
 
-For a local server, from this folder run:
+1. Open Supabase Dashboard.
+2. Select the SahiMilo project.
+3. Open **SQL Editor > New query**.
+4. Paste the complete SQL file.
+5. Click **Run**.
 
-```bash
-python3 -m http.server 8000
-```
+Then test one registration, confirm it is pending, log in as admin, approve it, and search for it on the homepage.
 
-Then open `http://localhost:8000`.
+## Important
 
-## Before launch
-
-1. In `script.js`, replace the sample `PROFESSIONALS` array with your real pilot professionals.
-2. Replace all placeholder phone numbers such as `9999999999` with your SahiMilo number and actual professional numbers.
-3. Update WhatsApp links with your SahiMilo WhatsApp number.
-4. Connect the professional registration form to Google Forms, Google Sheets, Airtable or another backend. The current static form only shows a success message.
-5. Update About/Contact details.
-6. Test every Call and WhatsApp button on a phone.
-
-## GitHub Pages + GoDaddy
-
-Create a public GitHub repository, upload these three website files, then enable GitHub Pages from Settings > Pages and publish from the `main` branch.
-
-In GitHub Pages, add your GoDaddy domain under Custom domain. Then configure the DNS records in GoDaddy exactly as GitHub's current custom-domain instructions specify.
-
-Do not put passwords, API keys or private customer information into this static repository.
+The publishable Supabase key in \`config.js\` is intended for browser use. Never put the Supabase service-role key in frontend code. Replace the placeholder WhatsApp number before launch.
