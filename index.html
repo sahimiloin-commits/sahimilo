@@ -6,6 +6,9 @@
   <meta name="description" content="SahiMilo - Find best products and services near you. Apne area ka professional dhoondhiye.">
   <title>SahiMilo | Find Local Professionals</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
+  <script defer src="config.js"></script>
+  <script defer src="app.js"></script>
 </head>
 <body>
   <header class="site-header">
@@ -19,6 +22,7 @@
         <a href="#services">Services</a>
         <a href="#register">Register as Professional</a>
         <a href="#contact">Contact</a>
+        <button id="adminLoginOpen" class="secondary-btn" type="button">Admin Login</button>
       </nav>
       <a class="nav-whatsapp" href="https://wa.me/?text=Hello%20SahiMilo%2C%20mujhe%20ek%20professional%20chahiye." target="_blank" rel="noopener">WhatsApp</a>
     </div>
@@ -151,21 +155,30 @@
         </div>
         <form id="registerForm" class="form-card">
           <h3>Professional Registration</h3>
-          <p class="form-help">Pilot ke liye basic details submit karein.</p>
-          <label class="field"><span>Name *</span><input name="name" required placeholder="Aapka naam"></label>
+          <p class="form-help">OTP ki zaroorat nahi. Submit karne ke baad profile admin approval tak pending rahegi.</p>
+          <label class="field"><span>Name *</span><input id="proName" required placeholder="Aapka naam"></label>
           <div class="field-row">
-            <label class="field"><span>Mobile *</span><input name="phone" required inputmode="tel" placeholder="10 digit mobile"></label>
-            <label class="field"><span>Experience</span><input name="experience" placeholder="Jaise 7 years"></label>
+            <label class="field"><span>Mobile *</span><input id="proPhone" required inputmode="tel" maxlength="15" placeholder="10 digit mobile"></label>
+            <label class="field"><span>WhatsApp</span><input id="proWhatsapp" inputmode="tel" maxlength="15" placeholder="Optional"></label>
           </div>
           <div class="field-row">
-            <label class="field"><span>Category *</span><select id="regCategory" name="category" required></select></label>
-            <label class="field"><span>Service *</span><select id="regService" name="service" required disabled></select></label>
+            <label class="field"><span>Category *</span><select id="regCategory" required><option value="">Category select karein</option></select></label>
+            <label class="field"><span>Experience (years)</span><input id="proExperience" type="number" min="0" max="70" value="0"></label>
           </div>
-          <label class="field"><span>Area / Pincode *</span><input name="location" required placeholder="Jaise Parihar / 843324"></label>
-          <label class="field"><span>WhatsApp number</span><input name="whatsapp" inputmode="tel" placeholder="Optional"></label>
-          <button class="primary-btn" type="submit">Register on SahiMilo</button>
-          <p id="registerMessage" class="success-message hidden">Thanks! Registration details ready hain. Pilot mein inhe SahiMilo team verify karegi.</p>
-          <p class="tiny-note">Note: Is free version mein form data automatically database mein save nahi hota. Neeche diya setup guide Google Sheet/Form integration batata hai.</p>
+          <div class="field"><span>Services * (multiple select kar sakte hain)</span><div id="servicePicker" class="service-picker"></div></div>
+          <div class="field-row">
+            <label class="field"><span>Dusri service manually add karein</span><input id="manualService" placeholder="Jaise: Inverter fitting"></label>
+            <button id="addServiceBtn" class="secondary-btn add-service-btn" type="button">+ Add service</button>
+          </div>
+          <div class="field-row">
+            <label class="field"><span>Area / Locality *</span><input id="proArea" required placeholder="Jaise Dumra"></label>
+            <label class="field"><span>Pincode *</span><input id="proPincode" required inputmode="numeric" maxlength="6" placeholder="843301"></label>
+          </div>
+          <label class="field"><span>City, State *</span><input id="proCity" required placeholder="Sitamarhi, Bihar"></label>
+          <label class="field"><span>Kaun-kaun se kaam karte hain?</span><textarea id="proBio" maxlength="1200" placeholder="Apne kaam aur skills ke baare mein batayein"></textarea></label>
+          <label class="consent"><input type="checkbox" required> Main confirm karta/karti hoon ki di gayi jaankari sahi hai.</label>
+          <button id="submitProBtn" class="primary-btn" type="submit">Profile submit karein</button>
+          <p id="registerMessage" class="notice hidden"></p>
         </form>
       </div>
     </section>
@@ -194,6 +207,21 @@
     </section>
   </main>
 
+
+  <div id="adminModal" class="admin-modal hidden">
+    <div class="admin-box"><button id="adminClose" class="admin-close" type="button">×</button>
+      <h2>Admin Login</h2><p class="form-help">Sirf SahiMilo admin ke liye.</p>
+      <label class="field"><span>Email</span><input id="adminEmail" type="email" placeholder="admin@sahimilo.in"></label>
+      <label class="field"><span>Password</span><input id="adminPassword" type="password"></label>
+      <button id="adminLoginBtn" class="primary-btn" type="button">Login</button>
+      <p id="adminMessage" class="notice hidden"></p>
+    </div>
+  </div>
+  <section id="adminDashboard" class="section hidden"><div class="container">
+    <div class="section-heading"><div><div class="eyebrow">ADMIN</div><h2>Professional approvals</h2></div><button id="adminLogout" class="secondary-btn">Logout</button></div>
+    <div id="adminStats"></div><div id="adminTable" class="admin-table-wrap"></div>
+  </div></section>
+
   <footer class="footer">
     <div class="container footer-inner">
       <div><a class="brand footer-brand" href="#home"><span class="brand-mark">✓</span><span>Sahi<span>Milo</span></span></a><p>Find best Products & Services near you.</p></div>
@@ -202,6 +230,5 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
 </body>
 </html>
