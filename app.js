@@ -57,12 +57,29 @@ async function searchProfessionals(){
   if(rawCategory&&!category)return alert("List se valid category select karein.");
   if(rawService&&!service)return alert("List se valid service select karein.");
   const location=$("locationInput").value.trim();
-  let q=db.from("professionals").select("id,name,phone,whatsapp,category,services,area,city,pincode,experience_years,bio,rating,reviews_count,status,verified_by_admin").eq("status","approved").eq("verified_by_admin",true).order("rating",{ascending:false}).limit(30);
-  if(category)q=q.eq("category",category);if(service)q=q.contains("services",[service]);if(location){const safe=location.replace(/[%_,()]/g,"");q=q.or("area.ilike.%"+safe+"%,city.ilike.%"+safe+"%,pincode.eq."+safe)}
-  const {data,error}=await q;if(error)return alert("Profiles load nahi ho paaye: "+error.message);
+  const safeLocation=location.replace(/[^\\p{L}\\p{N}\\s-]/gu,"").trim();
+  const buildQuery=structured=>{
+    const fields=structured
+      ?"id,name,phone,whatsapp,category,services,village,area,block_name,city,district,state,pincode,experience_years,bio,rating,reviews_count,status,verified_by_admin"
+      :"id,name,phone,whatsapp,category,services,area,city,state,pincode,experience_years,bio,rating,reviews_count,status,verified_by_admin";
+    let query=db.from("professionals").select(fields).eq("status","approved").eq("verified_by_admin",true).order("rating",{ascending:false}).limit(30);
+    if(category)query=query.eq("category",category);
+    if(service)query=query.contains("services",[service]);
+    if(safeLocation){
+      const locationFilters=structured
+        ?["village","area","block_name","city","district","state"].map(field=>field+".ilike.%"+safeLocation+"%")
+        :["area","city","state"].map(field=>field+".ilike.%"+safeLocation+"%");
+      if(/^\\d{6}$/.test(safeLocation))locationFilters.push("pincode.eq."+safeLocation);
+      query=query.or(locationFilters.join(","));
+    }
+    return query;
+  };
+  let {data,error}=await buildQuery(true);
+  if(error&&/village|block_name|district|schema cache|column/i.test(error.message))({data,error}=await buildQuery(false));
+  if(error)return alert("Profiles load nahi ho paaye: "+error.message);
   $("results").classList.remove("hidden");$("resultSummary").textContent=(data?.length||0)+" approved professional mile.";
   $("noResults").classList.toggle("hidden",!!data?.length);
-  $("resultsGrid").innerHTML=(data||[]).map(p=>'<article class="professional-card"><div class="pro-head"><div class="avatar">'+esc((p.name||"P").slice(0,1).toUpperCase())+'</div><div><div class="pro-name">'+esc(p.name)+'</div><div class="pro-service">✓ SahiMilo approved · '+esc(p.category)+'</div></div></div><div class="rating">⭐ '+Number(p.rating||0).toFixed(1)+" · "+(p.experience_years||0)+' yrs exp.</div><div class="pro-meta"><span>📍 '+esc([p.area,p.city,p.pincode].filter(Boolean).join(", "))+'</span><span>🛠️ '+esc((p.services||[]).join(", "))+'</span><span>'+esc(p.bio||"")+'</span></div><a class="primary-btn call-btn" href="tel:'+esc(normalPhone(p.phone))+'">📞 Call professional</a><a class="secondary-btn call-btn" target="_blank" rel="noopener" href="https://wa.me/'+digits(p.whatsapp||p.phone)+'">WhatsApp</a></article>').join("");
+  $("resultsGrid").innerHTML=(data||[]).map(p=>'<article class="professional-card"><div class="pro-head"><div class="avatar">'+esc((p.name||"P").slice(0,1).toUpperCase())+'</div><div><div class="pro-name">'+esc(p.name)+'</div><div class="pro-service">✓ SahiMilo approved · '+esc(p.category)+'</div></div></div><div class="rating">⭐ '+Number(p.rating||0).toFixed(1)+" · "+(p.experience_years||0)+' yrs exp.</div><div class="pro-meta"><span>📍 '+esc([p.village,p.area,p.block_name,p.city,p.district,p.state,p.pincode].filter(Boolean).join(", "))+'</span><span>🛠️ '+esc((p.services||[]).join(", "))+'</span><span>'+esc(p.bio||"")+'</span></div><a class="primary-btn call-btn" href="tel:'+esc(normalPhone(p.phone))+'">📞 Call professional</a><a class="secondary-btn call-btn" target="_blank" rel="noopener" href="https://wa.me/'+digits(p.whatsapp||p.phone)+'">WhatsApp</a></article>').join("");
   $("results").scrollIntoView({behavior:"smooth"});
 }
 $("findBtn").onclick=searchProfessionals;
