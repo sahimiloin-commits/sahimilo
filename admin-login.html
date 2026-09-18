@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Admin Login | SahiMilo</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
+  <script defer src="config.js?v=20260918-2"></script>
+  <script defer src="admin-login.js?v=20260918-1"></script>
+  <style>
+    body{background:linear-gradient(145deg,#f4faf6,#eef5f0);min-height:100vh}
+    .admin-login-page{min-height:calc(100vh - 73px);display:grid;place-items:center;padding:32px 16px}
+    .admin-login-card{width:min(430px,100%);background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:var(--shadow)}
+    .admin-login-card h1{font-size:30px;letter-spacing:-1px;margin:8px 0 6px}.admin-login-card>p{color:var(--muted);margin:0 0 22px}
+    .admin-login-card .field{margin-bottom:14px}.admin-login-card .primary-btn{width:100%;margin-top:4px}
+    .admin-security{font-size:11px;color:var(--muted);text-align:center;margin-top:17px}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="index.html"><span class="brand-mark">✓</span><span>Sahi<span>Milo</span></span></a>
+      <a class="nav-whatsapp" href="index.html">← Back to website</a>
+    </div>
+  </header>
+  <main class="admin-login-page">
+    <form id="adminLoginForm" class="admin-login-card">
+      <div class="eyebrow">SECURE ADMIN ACCESS</div>
+      <h1>Admin Login</h1>
+      <p>Professional applications manage karne ke liye login karein.</p>
+      <label class="field"><span>Email</span><input id="adminEmail" type="email" autocomplete="username" required placeholder="Admin email"></label>
+      <label class="field"><span>Password</span><input id="adminPassword" type="password" autocomplete="current-password" required placeholder="Password"></label>
+      <button id="adminLoginBtn" class="primary-btn" type="submit">Login to Dashboard</button>
+      <p id="adminMessage" class="notice hidden" role="alert"></p>
+      <div class="admin-security">🔒 Only authorised SahiMilo administrators can continue.</div>
+    </form>
+  </main>
+</body>
+</html>
