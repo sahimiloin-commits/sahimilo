@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
   <script defer src="config.js?v=20260918-2"></script>
-  <script defer src="app.js?v=20260918-3"></script>
+  <script defer src="app.js?v=20260918-4"></script>
 </head>
 <body>
   <header class="site-header">
@@ -153,33 +153,17 @@
             <li>Customer se directly baat karein</li>
           </ul>
         </div>
-        <form id="registerForm" class="form-card">
-          <h3>Professional Registration</h3>
-          <p class="form-help">OTP ki zaroorat nahi. Submit karne ke baad profile admin approval tak pending rahegi.</p>
-          <label class="field"><span>Name *</span><input id="proName" required placeholder="Aapka naam"></label>
-          <div class="field-row">
-            <label class="field"><span>Mobile *</span><input id="proPhone" required inputmode="tel" maxlength="15" placeholder="10 digit mobile"></label>
-            <label class="field"><span>WhatsApp</span><input id="proWhatsapp" inputmode="tel" maxlength="15" placeholder="Optional"></label>
-          </div>
-          <div class="field-row">
-            <label class="field"><span>Category *</span><select id="regCategory" required><option value="">Category select karein</option></select></label>
-            <label class="field"><span>Experience (years)</span><input id="proExperience" type="number" min="0" max="70" value="0"></label>
-          </div>
-          <div class="field"><span>Services * (multiple select kar sakte hain)</span><div id="servicePicker" class="service-picker"></div></div>
-          <div class="field-row">
-            <label class="field"><span>Dusri service manually add karein</span><input id="manualService" placeholder="Jaise: Inverter fitting"></label>
-            <button id="addServiceBtn" class="secondary-btn add-service-btn" type="button">+ Add service</button>
-          </div>
-          <div class="field-row">
-            <label class="field"><span>Area / Locality *</span><input id="proArea" required placeholder="Jaise Dumra"></label>
-            <label class="field"><span>Pincode *</span><input id="proPincode" required inputmode="numeric" maxlength="6" placeholder="843301"></label>
-          </div>
-          <label class="field"><span>City, State *</span><input id="proCity" required placeholder="Sitamarhi, Bihar"></label>
-          <label class="field"><span>Kaun-kaun se kaam karte hain?</span><textarea id="proBio" maxlength="1200" placeholder="Apne kaam aur skills ke baare mein batayein"></textarea></label>
-          <label class="consent"><input type="checkbox" required> Main confirm karta/karti hoon ki di gayi jaankari sahi hai aur main SahiMilo ke <a href="legal.html#professional-agreement" target="_blank" rel="noopener"><strong>Professional Agreement, Terms &amp; Consent</strong></a> se sehmat hoon.</label>
-          <button id="submitProBtn" class="primary-btn" type="submit">Profile submit karein</button>
-          <p id="registerMessage" class="notice hidden"></p>
-        </form>
+        <div class="form-card">
+          <h3>Create Professional Account</h3>
+          <p class="form-help">Pehle Gmail aur 6-digit SahiMilo PIN se account banayein. Login ke baad apna mobile number, WhatsApp, services, service area, experience aur work details add karein.</p>
+          <ul class="check-list" style="color:var(--ink)">
+            <li>Gmail + PIN se simple account</li>
+            <li>Profile aur services kabhi bhi update karein</li>
+            <li>New profile admin approval tak pending rahegi</li>
+          </ul>
+          <a class="primary-btn" href="professional-auth.html?mode=signup" style="width:100%">Create Professional Account</a>
+          <a class="secondary-btn" href="professional-auth.html" style="width:100%;margin-top:10px">Already registered? Login</a>
+        </div>
       </div>
     </section>
 
