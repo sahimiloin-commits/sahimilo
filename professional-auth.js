@@ -1,5 +1,5 @@
 /* global supabase, SAHIMILO_CONFIG */
-const db=window.supabase?.createClient(SAHIMILO_CONFIG.supabaseUrl,SAHIMILO_CONFIG.supabasePublishableKey),$=id=>document.getElementById(id);let mode="login";
+const db=window.supabase?.createClient(SAHIMILO_CONFIG.supabaseUrl,SAHIMILO_CONFIG.supabasePublishableKey),$=id=>document.getElementById(id);let mode=new URLSearchParams(location.search).get("mode")==="signup"?"signup":"login";
 function message(text,ok=false){$("professionalMessage").textContent=text;$("professionalMessage").className="notice "+(ok?"notice-ok":"notice-error")}
 function validGmail(email){return /^[^\s@]+@gmail\.com$/i.test(email)}
 function validPin(pin){return /^\d{6}$/.test(pin)}
