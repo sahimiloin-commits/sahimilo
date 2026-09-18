@@ -146,6 +146,8 @@ for each row execute function private.guard_professional_moderation_fields();
 
 commit;
 
+notify pgrst, 'reload schema';
+
 select policyname, roles, cmd
 from pg_policies
 where schemaname = 'public'
