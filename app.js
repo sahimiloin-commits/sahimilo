@@ -38,7 +38,6 @@ async function registerProfessional(e){
  $("submitProBtn").disabled=true;const {error}=await db.from("professionals").insert(payload);$("submitProBtn").disabled=false;if(error)return msg("registerMessage",error.message);
  msg("registerMessage","Registration submit ho gaya. Admin approval tak profile pending rahegi.",true);$("registerForm").reset();selectedServices=[];registrationServices();
 }
-=await db.rpc("admin_set_professional_status",{professional_uuid:id,new_status:status});if(error)return alert(error.message);loadAdmin()}
 document.addEventListener("click",e=>{if(e.target.classList.contains("service-pick")){const s=e.target.dataset.service;e.target.classList.toggle("active");selectedServices=e.target.classList.contains("active")?[...new Set([...selectedServices,s])]:selectedServices.filter(x=>x!==s)}});
 $("categorySelect").onchange=searchServiceOptions;$("regCategory").onchange=registrationServices;$("findBtn").onclick=searchProfessionals;$("registerForm").onsubmit=registerProfessional;
 $("addServiceBtn").onclick=()=>{const s=$("manualService").value.trim();if(s&&!selectedServices.includes(s)){selectedServices.push(s);$("servicePicker").insertAdjacentHTML("beforeend",'<button type="button" class="service-pick active" data-service="'+esc(s)+'">'+esc(s)+"</button>");$("manualService").value=""}};
