@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
   <script defer src="config.js?v=20260918-2"></script>
-  <script defer src="app.js?v=20260918-4"></script>
+  <script defer src="service-catalog.js?v=20260918-1"></script>
+  <script defer src="app.js?v=20260918-5"></script>
 </head>
 <body>
   <header class="site-header">
@@ -41,15 +42,14 @@
             <div class="field-row">
               <label class="field">
                 <span>Category</span>
-                <select id="categorySelect">
-                  <option value="">Category select karein</option>
-                </select>
+                <input id="categorySelect" type="search" list="categoryOptions" autocomplete="off" placeholder="Type ya list se category chunein">
+                <datalist id="categoryOptions"></datalist>
               </label>
               <label class="field">
                 <span>Service / Kaam</span>
-                <select id="serviceSelect" disabled>
-                  <option value="">Pehle category select karein</option>
-                </select>
+                <input id="serviceSelect" type="search" list="serviceOptions" autocomplete="off" placeholder="Type ya alphabet se service chunein">
+                <datalist id="serviceOptions"></datalist>
+                <small id="serviceDescription" class="service-description">Category select karne par services yahan milengi.</small>
               </label>
             </div>
             <div class="field-row">
