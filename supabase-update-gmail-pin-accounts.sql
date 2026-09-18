@@ -13,6 +13,16 @@ alter table public.user_profiles
   add column if not exists state text,
   add column if not exists pincode text;
 
+alter table public.user_profiles
+  drop constraint if exists user_profiles_id_fkey;
+
+alter table public.user_profiles
+  add constraint user_profiles_id_fkey
+  foreign key (id)
+  references auth.users(id)
+  on delete cascade
+  not valid;
+
 alter table public.user_profiles enable row level security;
 
 drop policy if exists "users read own profile" on public.user_profiles;
