@@ -14,11 +14,9 @@ const CATEGORIES={
 const cfg=window.SAHIMILO_CONFIG||{},db=window.supabase?.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey);
 const $=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
 const digits=v=>String(v||"").replace(/\D/g,""),normalPhone=v=>{let p=digits(v);if(p.length===10)p="91"+p;return "+"+p};
-let selectedServices=[];
 function msg(id,text,ok=false){const el=$(id);el.textContent=text;el.className="notice "+(ok?"notice-ok":"notice-error")}
-function initCategories(){["categorySelect","regCategory"].forEach(id=>Object.keys(CATEGORIES).forEach(c=>$(id).insertAdjacentHTML("beforeend",'<option value="'+esc(c)+'">'+esc(c)+"</option>")))}
+function initCategories(){Object.keys(CATEGORIES).forEach(c=>$("categorySelect").insertAdjacentHTML("beforeend",'<option value="'+esc(c)+'">'+esc(c)+"</option>"))}
 function searchServiceOptions(){const c=$("categorySelect").value,s=$("serviceSelect");s.disabled=!c;s.innerHTML=c?'<option value="">Service select karein</option>'+CATEGORIES[c].map(x=>"<option>"+esc(x)+"</option>").join(""):'<option value="">Pehle category select karein</option>'}
-function registrationServices(){selectedServices=[];const list=CATEGORIES[$("regCategory").value]||[];$("servicePicker").innerHTML=list.length?list.map(s=>'<button type="button" class="service-pick" data-service="'+esc(s)+'">'+esc(s)+"</button>").join(""):'<span class="tiny-note">Pehle category select karein.</span>'}
 async function searchProfessionals(){
  if(!db)return alert("Supabase configuration missing hai.");
  const category=$("categorySelect").value,service=$("serviceSelect").value,location=$("locationInput").value.trim();
@@ -30,15 +28,8 @@ async function searchProfessionals(){
  $("resultsGrid").innerHTML=(data||[]).map(p=>'<article class="professional-card"><div class="pro-head"><div class="avatar">'+esc((p.name||"P").slice(0,1).toUpperCase())+'</div><div><div class="pro-name">'+esc(p.name)+'</div><div class="pro-service">✓ SahiMilo approved · '+esc(p.category)+'</div></div></div><div class="rating">⭐ '+Number(p.rating||0).toFixed(1)+" · "+(p.experience_years||0)+' yrs exp.</div><div class="pro-meta"><span>📍 '+esc([p.area,p.city,p.pincode].filter(Boolean).join(", "))+'</span><span>🛠️ '+esc((p.services||[]).join(", "))+'</span><span>'+esc(p.bio||"")+'</span></div><a class="primary-btn call-btn" href="tel:'+esc(normalPhone(p.phone))+'">📞 Call professional</a><a class="secondary-btn call-btn" target="_blank" rel="noopener" href="https://wa.me/'+digits(p.whatsapp||p.phone)+'">WhatsApp</a></article>').join("");
  $("results").scrollIntoView({behavior:"smooth"});
 }
-async function registerProfessional(e){
- e.preventDefault();if(!db)return msg("registerMessage","Supabase configuration missing hai.");
- if(!selectedServices.length)return msg("registerMessage","Kam se kam ek service select ya add karein.");
- const mobile=digits($("proPhone").value),pin=$("proPincode").value.trim();if(mobile.length<10||mobile.length>12)return msg("registerMessage","Sahi mobile number enter karein.");if(!/^\d{6}$/.test(pin))return msg("registerMessage","6-digit pincode enter karein.");
- const cs=$("proCity").value.split(",").map(x=>x.trim()),payload={name:$("proName").value.trim(),phone:normalPhone(mobile),whatsapp:normalPhone($("proWhatsapp").value||mobile),category:$("regCategory").value,services:selectedServices,area:$("proArea").value.trim(),city:cs[0]||"",state:cs.slice(1).join(", ")||"Bihar",pincode:pin,experience_years:Number($("proExperience").value||0),bio:$("proBio").value.trim(),verified_mobile:false,verified_whatsapp:false,verified_by_admin:false,status:"pending"};
- $("submitProBtn").disabled=true;const {error}=await db.from("professionals").insert(payload);$("submitProBtn").disabled=false;if(error)return msg("registerMessage",error.message);
- msg("registerMessage","Registration submit ho gaya. Admin approval tak profile pending rahegi.",true);$("registerForm").reset();selectedServices=[];registrationServices();
-}
-document.addEventListener("click",e=>{if(e.target.classList.contains("service-pick")){const s=e.target.dataset.service;e.target.classList.toggle("active");selectedServices=e.target.classList.contains("active")?[...new Set([...selectedServices,s])]:selectedServices.filter(x=>x!==s)}});
-$("categorySelect").onchange=searchServiceOptions;$("regCategory").onchange=registrationServices;$("findBtn").onclick=searchProfessionals;$("registerForm").onsubmit=registerProfessional;
-$("addServiceBtn").onclick=()=>{const s=$("manualService").value.trim();if(s&&!selectedServices.includes(s)){selectedServices.push(s);$("servicePicker").insertAdjacentHTML("beforeend",'<button type="button" class="service-pick active" data-service="'+esc(s)+'">'+esc(s)+"</button>");$("manualService").value=""}};
-$("resetBtn").onclick=()=>$("results").classList.add("hidden");$("year").textContent=new Date().getFullYear();initCategories();registrationServices();
+$("categorySelect").onchange=searchServiceOptions;
+$("findBtn").onclick=searchProfessionals;
+$("resetBtn").onclick=()=>$("results").classList.add("hidden");
+$("year").textContent=new Date().getFullYear();
+initCategories();
