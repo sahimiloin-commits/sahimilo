@@ -8,8 +8,8 @@
       "custom_domain": true
     },
     {
-      "pattern": "www.sahimilo.in",
-      "custom_domain": true
+      "pattern": "www.sahimilo.in/*",
+      "zone_name": "sahimilo.in"
     }
   ],
   "assets": {
