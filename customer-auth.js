@@ -1,0 +1,9 @@
+/* global supabase, SAHIMILO_CONFIG */
+const db=window.supabase?.createClient(SAHIMILO_CONFIG.supabaseUrl,SAHIMILO_CONFIG.supabasePublishableKey);
+let mode="login";const $=id=>document.getElementById(id);
+function message(text,ok=false){$("customerMessage").textContent=text;$("customerMessage").className="notice "+(ok?"notice-ok":"notice-error")}
+document.querySelectorAll(".account-tab").forEach(tab=>tab.onclick=()=>{mode=tab.dataset.mode;document.querySelectorAll(".account-tab").forEach(x=>x.classList.toggle("active",x===tab));$("nameField").classList.toggle("hidden",mode!=="signup");$("customerSubmit").textContent=mode==="login"?"Login":"Create Customer Account";$("customerPassword").autocomplete=mode==="login"?"current-password":"new-password";$("customerMessage").classList.add("hidden")});
+$("customerForm").onsubmit=async e=>{e.preventDefault();const email=$("customerEmail").value.trim(),password=$("customerPassword").value,button=$("customerSubmit");button.disabled=true;
+if(mode==="login"){const {data,error}=await db.auth.signInWithPassword({email,password});button.disabled=false;if(error)return message(error.message);location.replace("customer-dashboard.html");}
+else{const name=$("customerName").value.trim();if(!name){button.disabled=false;return message("Full name enter karein.")}const {data,error}=await db.auth.signUp({email,password,options:{data:{display_name:name},emailRedirectTo:location.origin+"/customer-dashboard.html"}});button.disabled=false;if(error)return message(error.message);if(data.session)location.replace("customer-dashboard.html");else message("Account create ho gaya. Email confirmation link open karke login karein.",true);}};
+(async()=>{const {data:{session}}=await db.auth.getSession();if(session)location.replace("customer-dashboard.html")})();
