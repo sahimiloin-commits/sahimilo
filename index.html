@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
   <script defer src="config.js?v=20260918-2"></script>
-  <script defer src="app.js?v=20260918-2"></script>
+  <script defer src="app.js?v=20260918-3"></script>
 </head>
 <body>
   <header class="site-header">
@@ -22,7 +22,7 @@
         <a href="#services">Services</a>
         <a href="#register">Register as Professional</a>
         <a href="#contact">Contact</a>
-        <button id="adminLoginOpen" class="secondary-btn" type="button">Admin Login</button>
+        <a class="secondary-btn" href="admin-login.html">Admin Login</a>
       </nav>
       <a class="nav-whatsapp" href="https://wa.me/?text=Hello%20SahiMilo%2C%20mujhe%20ek%20professional%20chahiye." target="_blank" rel="noopener">WhatsApp</a>
     </div>
@@ -208,20 +208,6 @@
     </section>
   </main>
 
-
-  <div id="adminModal" class="admin-modal hidden">
-    <div class="admin-box"><button id="adminClose" class="admin-close" type="button">×</button>
-      <h2>Admin Login</h2><p class="form-help">Sirf SahiMilo admin ke liye.</p>
-      <label class="field"><span>Email</span><input id="adminEmail" type="email" placeholder="admin@sahimilo.in"></label>
-      <label class="field"><span>Password</span><input id="adminPassword" type="password"></label>
-      <button id="adminLoginBtn" class="primary-btn" type="button">Login</button>
-      <p id="adminMessage" class="notice hidden"></p>
-    </div>
-  </div>
-  <section id="adminDashboard" class="section hidden"><div class="container">
-    <div class="section-heading"><div><div class="eyebrow">ADMIN</div><h2>Professional approvals</h2></div><button id="adminLogout" class="secondary-btn">Logout</button></div>
-    <div id="adminStats"></div><div id="adminTable" class="admin-table-wrap"></div>
-  </div></section>
 
   <footer class="footer">
     <div class="container footer-inner">
