@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Professional Applications | SahiMilo Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
+  <script defer src="config.js?v=20260918-2"></script>
+  <script defer src="admin-dashboard.js?v=20260918-1"></script>
+  <style>
+    body{background:#f5f8f5}.admin-shell{padding:34px 0 70px}
+    .admin-top{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:24px}
+    .admin-top h1{font-size:clamp(30px,4vw,44px);letter-spacing:-1.5px;margin:4px 0}.admin-top p{color:var(--muted);margin:0}
+    .admin-top-actions{display:flex;gap:10px}.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}
+    .admin-stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}.admin-stat span{display:block;font-size:12px;color:var(--muted)}.admin-stat strong{display:block;font-size:28px;margin-top:3px}
+    .admin-toolbar{display:flex;gap:12px;margin-bottom:16px}.admin-toolbar input,.admin-toolbar select{height:46px;border:1px solid #d8e0da;border-radius:11px;padding:0 13px;background:#fff}.admin-toolbar input{flex:1}
+    .admin-panel{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}.admin-table-scroll{overflow:auto}
+    .admin-data-table{width:100%;border-collapse:collapse;font-size:12px}.admin-data-table th{background:#f2f6f3;color:#526057;text-align:left;padding:12px;white-space:nowrap}.admin-data-table td{padding:12px;border-top:1px solid var(--line);vertical-align:top;min-width:100px}.admin-data-table td:first-child{min-width:160px}.admin-data-table td:last-child{min-width:310px}
+    .status-badge{display:inline-block;border-radius:99px;padding:5px 9px;font-weight:800;text-transform:capitalize}.status-pending{background:#fff4cf;color:#775b00}.status-approved{background:#e3f5e9;color:#106437}.status-suspended{background:#ffe7e3;color:#9c2319}
+    .admin-actions{display:flex;gap:6px;flex-wrap:wrap}.admin-action{min-height:34px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:#fff;font-weight:750;cursor:pointer}.admin-action:hover{border-color:var(--green)}.admin-delete{color:#a3261e;border-color:#efc9c5}.admin-empty{text-align:center;padding:40px;color:var(--muted)}
+    .admin-loading{min-height:60vh;display:grid;place-items:center;color:var(--muted)}
+    @media(max-width:760px){.admin-top{align-items:flex-start;flex-direction:column}.admin-stats{grid-template-columns:repeat(2,1fr)}.admin-toolbar{flex-direction:column}.admin-top-actions{width:100%}.admin-top-actions>*{flex:1}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="index.html"><span class="brand-mark">✓</span><span>Sahi<span>Milo</span></span></a>
+      <span class="nav-whatsapp">Admin Portal</span>
+    </div>
+  </header>
+  <div id="adminLoading" class="admin-loading">Checking secure admin access...</div>
+  <main id="adminApp" class="admin-shell hidden">
+    <div class="container">
+      <div class="admin-top">
+        <div><div class="eyebrow">SAHIMILO ADMIN</div><h1>Professional Applications</h1><p>Review and manage every professional registration.</p></div>
+        <div class="admin-top-actions"><a class="secondary-btn" href="index.html">View Website</a><button id="adminLogout" class="primary-btn" type="button">Logout</button></div>
+      </div>
+      <div id="adminStats" class="admin-stats"></div>
+      <div class="admin-toolbar">
+        <input id="adminSearch" type="search" placeholder="Search name, phone, service, area or pincode">
+        <select id="adminFilter"><option value="all">All statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="suspended">Suspended</option></select>
+        <button id="adminRefresh" class="secondary-btn" type="button">Refresh</button>
+      </div>
+      <p id="adminMessage" class="notice hidden" role="alert"></p>
+      <section class="admin-panel"><div id="adminTable" class="admin-table-scroll"></div></section>
+    </div>
+  </main>
+</body>
+</html>
