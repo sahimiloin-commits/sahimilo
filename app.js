@@ -62,7 +62,7 @@ async function loadLocations(){
     const key="name:"+row.search_name.toLowerCase()+":"+details.toLowerCase();
     if(!seen.has(key)){seen.add(key);suggestions.push({value:row.search_name,label:details})}
   }
-  for(const pin of unique(locations.map(row=>/^\\d{6}$/.test(row.pincode||"")?row.pincode:""))){
+  for(const pin of unique(locations.map(row=>/^\d{6}$/.test(row.pincode||"")?row.pincode:""))){
     suggestions.push({value:pin,label:"PIN Code • Sitamarhi"});
   }
   $("locationOptions").innerHTML=suggestions.map(item=>'<option value="'+esc(item.value)+'" label="'+esc(item.label)+'"></option>').join("");
@@ -87,7 +87,7 @@ async function searchProfessionals(){
   if(rawCategory&&!category)return alert("List se valid category select karein.");
   if(rawService&&!service)return alert("List se valid service select karein.");
   const location=$("locationInput").value.trim();
-  const safeLocation=location.replace(/[^\\p{L}\\p{N}\\s-]/gu,"").trim();
+  const safeLocation=location.replace(/[^\p{L}\p{N}\s-]/gu,"").trim();
   const directoryMatch=selectedLocation(safeLocation);
   const buildQuery=structured=>{
     const fields=structured
@@ -100,8 +100,8 @@ async function searchProfessionals(){
       const locationFilters=structured
         ?["village","area","block_name","city","district","state"].map(field=>field+".ilike.%"+safeLocation+"%")
         :["area","city","state"].map(field=>field+".ilike.%"+safeLocation+"%");
-      if(/^\\d{6}$/.test(safeLocation))locationFilters.push("pincode.eq."+safeLocation);
-      if(directoryMatch?.pincode&&/^\\d{6}$/.test(directoryMatch.pincode))locationFilters.push("pincode.eq."+directoryMatch.pincode);
+      if(/^\d{6}$/.test(safeLocation))locationFilters.push("pincode.eq."+safeLocation);
+      if(directoryMatch?.pincode&&/^\d{6}$/.test(directoryMatch.pincode))locationFilters.push("pincode.eq."+directoryMatch.pincode);
       query=query.or(locationFilters.join(","));
     }
     return query;

@@ -49,7 +49,7 @@ async function loadLocations(){
   $("profileBlockOptions").innerHTML=options(unique(rows.map(row=>row.block_subdistrict)));
   $("profileCityOptions").innerHTML=options(unique(rows.flatMap(row=>[row.block_subdistrict,row.district])));
   $("profileDistrictOptions").innerHTML=options(unique(rows.map(row=>row.district)));
-  $("profilePincodeOptions").innerHTML=options(unique(rows.map(row=>/^\\d{6}$/.test(row.pincode||"")?row.pincode:"")));
+  $("profilePincodeOptions").innerHTML=options(unique(rows.map(row=>/^\d{6}$/.test(row.pincode||"")?row.pincode:"")));
 }
 function applyVillageDetails(){
   const value=$("profileVillage").value.trim();
