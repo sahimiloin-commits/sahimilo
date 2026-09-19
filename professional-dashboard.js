@@ -83,12 +83,14 @@ $("profileCategory").addEventListener("input",refreshProfessionalServices);
 $("profileCategory").addEventListener("change",refreshProfessionalServices);
 $("profileServiceSearch").addEventListener("input",describeProfessionalService);
 $("profileServiceSearch").addEventListener("change",describeProfessionalService);
-$("addProfileService").onclick=addProfessionalService;\n$("profileVillage").addEventListener("change",applyVillageDetails);
+$("addProfileService").onclick=addProfessionalService;
+$("profileVillage").addEventListener("change",applyVillageDetails);
 $("profileServiceSearch").addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();addProfessionalService()}});
 $("profileForm").onsubmit=async e=>{
   e.preventDefault();
   const category=exact($("profileCategory").value,categories());
-  const village=$("profileVillage").value.trim(),district=$("profileDistrict").value.trim();\n  const changes={name:$("profileName").value.trim(),experience_years:Number($("profileExperience").value||0),phone:$("profilePhone").value.trim(),whatsapp:$("profileWhatsapp").value.trim(),category,services:selectedServices,village,area:$("profileArea").value.trim()||village,block_name:$("profileBlock").value.trim(),pincode:$("profilePincode").value.trim(),city:$("profileCity").value.trim()||district,district,state:$("profileState").value.trim(),bio:$("profileBio").value.trim()};
+  const village=$("profileVillage").value.trim(),district=$("profileDistrict").value.trim();
+  const changes={name:$("profileName").value.trim(),experience_years:Number($("profileExperience").value||0),phone:$("profilePhone").value.trim(),whatsapp:$("profileWhatsapp").value.trim(),category,services:selectedServices,village,area:$("profileArea").value.trim()||village,block_name:$("profileBlock").value.trim(),pincode:$("profilePincode").value.trim(),city:$("profileCity").value.trim()||district,district,state:$("profileState").value.trim(),bio:$("profileBio").value.trim()};
   if(digits(changes.phone).length<10)return msg("Valid mobile number enter karein.");
   if(!changes.category||!changes.services.length||!changes.village||!changes.district||!changes.state)return msg("Category, kam se kam ek service, village, district aur state enter karein.");
   if(!/^\d{6}$/.test(changes.pincode))return msg("Valid 6-digit pincode enter karein.");
