@@ -80,34 +80,35 @@ async function loadCatalog(){
 }
 async function searchProfessionals(){
   if(!db)return alert("Supabase configuration missing hai.");
-  const rawService=$("serviceSelect").value.trim();
-  const service=exact(rawService,services());
+  const rawService=$("serviceSelect").value.trim(),service=exact(rawService,services());
   if(rawService&&!service)return alert("List se valid service select karein.");
-  const location=$("locationInput").value.trim();
-  const safeLocation=location.replace(/[^\p{L}\p{N}\s-]/gu,"").trim();
-  const directoryMatch=selectedLocation(safeLocation);
-  const buildQuery=structured=>{
-    const fields=structured
-      ?"id,name,phone,whatsapp,category,services,village,area,block_name,city,district,state,pincode,experience_years,bio,rating,reviews_count,status,verified_by_admin"
-      :"id,name,phone,whatsapp,category,services,area,city,state,pincode,experience_years,bio,rating,reviews_count,status,verified_by_admin";
-    let query=db.from("professionals").select(fields).eq("status","approved").eq("verified_by_admin",true).order("rating",{ascending:false}).limit(30);
-    if(service)query=query.contains("services",[service]);
-    if(safeLocation){
-      const searchTerms=locationTerms(safeLocation);
-      const searchFields=structured?["village","area","block_name","city","district","state"]:["area","city","state"];
-      const locationFilters=searchTerms.flatMap(term=>searchFields.map(field=>field+".ilike.%"+term+"%"));
-      if(/^\d{6}$/.test(safeLocation))locationFilters.push("pincode.eq."+safeLocation);
-      if(directoryMatch?.pincode&&/^\d{6}$/.test(directoryMatch.pincode))locationFilters.push("pincode.eq."+directoryMatch.pincode);
-      query=query.or(locationFilters.join(","));
-    }
-    return query;
+  const raw=$("locationInput").value.trim(),needle=raw.toLowerCase();
+  if(!needle)return alert("Village, city, district ya PIN code enter karein.");
+  const aliases=locationTerms(raw).map(x=>x.toLowerCase());
+  const same=v=>aliases.includes(String(v||"").trim().toLowerCase());
+  const matchingRows=locations.filter(r=>same(r.search_name)||same(r.village)||same(r.block_subdistrict)||same(r.district)||same(r.pincode));
+  const wanted={
+    villages:unique(matchingRows.flatMap(r=>[r.village,r.search_name]).filter(Boolean)).map(x=>x.toLowerCase()),
+    cities:unique(matchingRows.map(r=>r.block_subdistrict).filter(Boolean)).map(x=>x.toLowerCase()),
+    districts:unique(matchingRows.map(r=>r.district).filter(Boolean)).map(x=>x.toLowerCase()),
+    pincodes:unique(matchingRows.map(r=>r.pincode).filter(Boolean)).map(x=>x.toLowerCase())
   };
-  let {data,error}=await buildQuery(true);
-  if(error&&/village|block_name|district|schema cache|column/i.test(error.message))({data,error}=await buildQuery(false));
-  if(error)return alert("Profiles load nahi ho paaye: "+error.message);
-  $("results").classList.remove("hidden");$("resultSummary").textContent=(data?.length||0)+" approved professional mile.";
-  $("noResults").classList.toggle("hidden",!!data?.length);
-  $("resultsGrid").innerHTML=(data||[]).map(p=>'<article class="professional-card"><div class="pro-head"><div class="avatar">'+esc((p.name||"P").slice(0,1).toUpperCase())+'</div><div><div class="pro-name">'+esc(p.name)+'</div><div class="pro-service">✓ SahiMilo approved · '+esc(p.category)+'</div></div></div><div class="rating">⭐ '+Number(p.rating||0).toFixed(1)+" · "+(p.experience_years||0)+' yrs exp.</div><div class="pro-meta"><span>📍 '+esc([p.village,p.area,p.block_name,p.city,p.district,p.state,p.pincode].filter(Boolean).join(", "))+'</span><span>🛠️ '+esc((p.services||[]).join(", "))+'</span><span>'+esc(p.bio||"")+'</span></div><a class="primary-btn call-btn" href="tel:'+esc(normalPhone(p.phone))+'">📞 Call professional</a><a class="secondary-btn call-btn" target="_blank" rel="noopener" href="https://wa.me/'+digits(p.whatsapp||p.phone)+'">WhatsApp</a></article>').join("");
+  let query=db.from("professionals").select("id,name,phone,whatsapp,services,service_villages,service_cities,service_districts,service_pincodes,village,area,block_name,city,district,state,pincode,experience_years,bio,rating,reviews_count,status,verified_by_admin").eq("status","approved").eq("verified_by_admin",true).order("rating",{ascending:false}).limit(100);
+  if(service)query=query.contains("services",[service]);
+  let {data,error}=await query;if(error)return alert("Profiles load nahi ho paaye: "+error.message);
+  const intersects=(values,wantedValues)=>values.some(v=>wantedValues.includes(String(v).trim().toLowerCase()));
+  data=(data||[]).filter(p=>{
+    const villages=p.service_villages?.length?p.service_villages:[p.village].filter(Boolean);
+    const cities=p.service_cities?.length?p.service_cities:[p.city,p.block_name].filter(Boolean);
+    const districts=p.service_districts?.length?p.service_districts:[p.district].filter(Boolean);
+    const pins=p.service_pincodes?.length?p.service_pincodes:[p.pincode].filter(Boolean);
+    return [...villages,...cities,...districts,...pins].some(same)
+      ||intersects(villages,wanted.villages)||intersects(cities,wanted.cities)
+      ||intersects(districts,wanted.districts)||intersects(pins,wanted.pincodes);
+  });
+  const coverage=p=>[...(p.service_villages||[]),...(p.service_cities||[]),...(p.service_districts||[]),...(p.service_pincodes||[])].join(", ")||[p.village,p.city,p.district,p.pincode].filter(Boolean).join(", ");
+  $("results").classList.remove("hidden");$("resultSummary").textContent=(data?.length||0)+" approved professional mile.";$("noResults").classList.toggle("hidden",!!data?.length);
+  $("resultsGrid").innerHTML=data.map(p=>'<article class="professional-card"><div class="pro-head"><div class="avatar">'+esc((p.name||"P").slice(0,1).toUpperCase())+'</div><div><div class="pro-name">'+esc(p.name)+'</div><div class="pro-service">✓ SahiMilo approved</div></div></div><div class="rating">⭐ '+Number(p.rating||0).toFixed(1)+" · "+(p.experience_years||0)+' yrs exp.</div><div class="pro-meta"><span>📍 '+esc(coverage(p))+'</span><span>🛠️ '+esc((p.services||[]).join(", "))+'</span><span>'+esc(p.bio||"")+'</span></div><a class="primary-btn call-btn" href="tel:'+esc(normalPhone(p.phone))+'">📞 Call professional</a><a class="secondary-btn call-btn" target="_blank" rel="noopener" href="https://wa.me/'+digits(p.whatsapp||p.phone)+'">WhatsApp</a></article>').join("");
   $("results").scrollIntoView({behavior:"smooth"});
 }
 $("findBtn").onclick=searchProfessionals;
