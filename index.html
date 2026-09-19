@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
   <script defer src="config.js?v=20260918-2"></script>
   <script defer src="service-catalog.js?v=20260918-1"></script>
-  <script defer src="app.js?v=20260919-1"></script>
+  <script defer src="app.js?v=20260919-2"></script>
 </head>
 <body>
   <header class="site-header">
@@ -55,7 +55,7 @@
             <div class="field-row">
               <label class="field full">
                 <span>City, Village ya PIN Code</span>
-                <input id="locationInput" type="search" autocomplete="postal-code" placeholder="Jaise: Sitamarhi, Nanpur, Nauwadhih ya 843301">
+                <input id="locationInput" type="search" list="locationOptions" autocomplete="off" placeholder="Village, post office, police station ya PIN type karein">\n                <datalist id="locationOptions"></datalist>
               </label>
             </div>
             <button id="findBtn" class="primary-btn" type="button">Find Professionals <span>→</span></button>

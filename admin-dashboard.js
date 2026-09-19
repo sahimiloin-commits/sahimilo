@@ -31,7 +31,7 @@ async function requireAdmin(){
 async function loadApplications(){
   $("adminMessage").classList.add("hidden");
   const {data,error}=await db.from("professionals")
-    .select("id,name,phone,whatsapp,category,services,area,city,state,pincode,experience_years,bio,rating,reviews_count,status,verified_mobile,verified_whatsapp,verified_by_admin,created_at")
+    .select("id,name,phone,whatsapp,category,services,village,area,block_name,city,district,state,pincode,experience_years,bio,rating,reviews_count,status,verified_mobile,verified_whatsapp,verified_by_admin,created_at")
     .order("created_at",{ascending:false});
   if(error)return showMessage("Applications load nahi hui: "+error.message);
   applications=data||[];
@@ -42,7 +42,7 @@ function render(){
   const query=$("adminSearch").value.trim().toLowerCase();
   const filter=$("adminFilter").value;
   const rows=applications.filter(item=>{
-    const haystack=[item.name,item.phone,item.whatsapp,item.category,(item.services||[]).join(" "),item.area,item.city,item.state,item.pincode,item.bio].join(" ").toLowerCase();
+    const haystack=[item.name,item.phone,item.whatsapp,item.category,(item.services||[]).join(" "),item.village,item.area,item.block_name,item.city,item.district,item.state,item.pincode,item.bio].join(" ").toLowerCase();
     return (filter==="all"||item.status===filter)&&(!query||haystack.includes(query));
   });
   $("adminStats").innerHTML=
@@ -59,7 +59,7 @@ function render(){
       '<td><strong>'+esc(item.name)+'</strong><br><small>ID: '+esc(item.id)+'</small></td>'+
       '<td>'+esc(item.phone)+'<br>'+esc(item.whatsapp||"")+'</td>'+
       '<td><strong>'+esc(item.category)+'</strong><br>'+esc((item.services||[]).join(", "))+'</td>'+
-      '<td>'+esc([item.area,item.city,item.state,item.pincode].filter(Boolean).join(", "))+'</td>'+
+      '<td>'+esc([item.village,item.area,item.block_name,item.city,item.district,item.state,item.pincode].filter(Boolean).join(", "))+'</td>'+
       '<td>'+esc(item.experience_years||0)+' years<br><small>'+esc(item.bio||"No details")+'</small></td>'+
       '<td>'+esc(new Date(item.created_at).toLocaleString("en-IN"))+'</td>'+
       '<td>'+statusBadge(item.status)+'</td>'+

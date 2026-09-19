@@ -1,5 +1,5 @@
 /* global supabase, SAHIMILO_CONFIG, SAHIMILO_SERVICE_CATALOG */
-let catalog=Array.isArray(window.SAHIMILO_SERVICE_CATALOG)?window.SAHIMILO_SERVICE_CATALOG:[];
+let catalog=Array.isArray(window.SAHIMILO_SERVICE_CATALOG)?window.SAHIMILO_SERVICE_CATALOG:[],locations=[];
 const cfg=window.SAHIMILO_CONFIG||{},db=window.supabase?.createClient(cfg.supabaseUrl,cfg.supabasePublishableKey);
 const $=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
 const digits=v=>String(v||"").replace(/\D/g,""),normalPhone=v=>{let p=digits(v);if(p.length===10)p="91"+p;return "+"+p};
@@ -42,6 +42,36 @@ function renderPopularServices(){
     document.querySelector(".search-card").scrollIntoView({behavior:"smooth",block:"center"});
   });
 }
+async function loadLocations(){
+  if(!db)return;
+  const rows=[];
+  for(let from=0;;from+=1000){
+    const {data,error}=await db.from("location_directory")
+      .select("entity_type,search_name,state,district,block_subdistrict,village,police_station,post_office,pincode")
+      .eq("active",true).order("search_name").range(from,from+999);
+    if(error){console.warn("Location directory load failed:",error.message);break}
+    rows.push(...(data||[]));
+    if(!data||data.length<1000)break;
+  }
+  locations=rows;
+  const suggestions=[];
+  const seen=new Set();
+  for(const row of locations){
+    const type=row.entity_type==="village"?"Village":row.entity_type==="post_office"?"Post Office":"Police Station";
+    const details=[type,row.block_subdistrict,row.district,row.pincode].filter(Boolean).join(" • ");
+    const key="name:"+row.search_name.toLowerCase()+":"+details.toLowerCase();
+    if(!seen.has(key)){seen.add(key);suggestions.push({value:row.search_name,label:details})}
+  }
+  for(const pin of unique(locations.map(row=>/^\\d{6}$/.test(row.pincode||"")?row.pincode:""))){
+    suggestions.push({value:pin,label:"PIN Code • Sitamarhi"});
+  }
+  $("locationOptions").innerHTML=suggestions.map(item=>'<option value="'+esc(item.value)+'" label="'+esc(item.label)+'"></option>').join("");
+}
+function selectedLocation(value){
+  const cleaned=value.trim();
+  return locations.find(row=>row.search_name.localeCompare(cleaned,"en",{sensitivity:"base"})===0)
+    ||locations.find(row=>row.pincode===cleaned)||null;
+}
 async function loadCatalog(){
   if(db){
     const {data,error}=await db.from("service_catalog").select("category,service,description,sort_order").eq("active",true).order("sort_order");
@@ -57,7 +87,7 @@ async function searchProfessionals(){
   if(rawCategory&&!category)return alert("List se valid category select karein.");
   if(rawService&&!service)return alert("List se valid service select karein.");
   const location=$("locationInput").value.trim();
-  const safeLocation=location.replace(/[^\\p{L}\\p{N}\\s-]/gu,"").trim();
+  const safeLocation=location.replace(/[^\\p{L}\\p{N}\\s-]/gu,"").trim();\n  const directoryMatch=selectedLocation(safeLocation);
   const buildQuery=structured=>{
     const fields=structured
       ?"id,name,phone,whatsapp,category,services,village,area,block_name,city,district,state,pincode,experience_years,bio,rating,reviews_count,status,verified_by_admin"
@@ -69,7 +99,7 @@ async function searchProfessionals(){
       const locationFilters=structured
         ?["village","area","block_name","city","district","state"].map(field=>field+".ilike.%"+safeLocation+"%")
         :["area","city","state"].map(field=>field+".ilike.%"+safeLocation+"%");
-      if(/^\\d{6}$/.test(safeLocation))locationFilters.push("pincode.eq."+safeLocation);
+      if(/^\\d{6}$/.test(safeLocation))locationFilters.push("pincode.eq."+safeLocation);\n      if(directoryMatch?.pincode&&/^\\d{6}$/.test(directoryMatch.pincode))locationFilters.push("pincode.eq."+directoryMatch.pincode);
       query=query.or(locationFilters.join(","));
     }
     return query;
@@ -85,4 +115,4 @@ async function searchProfessionals(){
 $("findBtn").onclick=searchProfessionals;
 $("resetBtn").onclick=()=>$("results").classList.add("hidden");
 $("year").textContent=new Date().getFullYear();
-loadCatalog();
+Promise.all([loadCatalog(),loadLocations()]);
