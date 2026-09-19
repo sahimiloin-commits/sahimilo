@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
   <script defer src="config.js?v=20260918-2"></script>
   <script defer src="service-catalog.js?v=20260918-1"></script>
-  <script defer src="app.js?v=20260919-3"></script>
+  <script defer src="app.js?v=20260919-4"></script>
 </head>
 <body>
   <header class="site-header">
@@ -38,24 +38,20 @@
           <p class="hero-sub">Electrician se AC Expert, Carpenter se Home Painter tak.<br>Har kaam ke liye apne area ke <strong>right professionals</strong> dhoondhiye. SahiMilo par profile dekhiye, professional chuniye aur directly call kijiye.</p>
 
           <div class="search-card">
-            <div class="step-label">1. Pehle kaam select karein</div>
+            <div class="step-label">1. Kaam aur location select karein</div>
             <div class="field-row">
-              <label class="field">
-                <span>Category</span>
-                <input id="categorySelect" type="search" list="categoryOptions" autocomplete="off" placeholder="Type ya list se category chunein">
-                <datalist id="categoryOptions"></datalist>
-              </label>
-              <label class="field">
+              <label class="field full">
                 <span>Service / Kaam</span>
                 <input id="serviceSelect" type="search" list="serviceOptions" autocomplete="off" placeholder="Type ya alphabet se service chunein">
                 <datalist id="serviceOptions"></datalist>
-                <small id="serviceDescription" class="service-description">Category select karne par services yahan milengi.</small>
+                <small id="serviceDescription" class="service-description">Service type karein ya alphabetical list se chunein.</small>
               </label>
             </div>
             <div class="field-row">
               <label class="field full">
                 <span>City, Village ya PIN Code</span>
-                <input id="locationInput" type="search" list="locationOptions" autocomplete="off" placeholder="Village, post office, police station ya PIN type karein">\n                <datalist id="locationOptions"></datalist>
+                <input id="locationInput" type="search" list="locationOptions" autocomplete="off" placeholder="Village, post office, police station ya PIN type karein">
+                <datalist id="locationOptions"></datalist>
               </label>
             </div>
             <button id="findBtn" class="primary-btn" type="button">Find Professionals <span>→</span></button>

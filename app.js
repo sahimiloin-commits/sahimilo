@@ -11,32 +11,24 @@ const exact=(value,values)=>values.find(item=>item.localeCompare(value.trim(),"e
 function categories(){return unique(catalog.map(row=>row.category))}
 function services(category=""){return unique(catalog.filter(row=>!category||row.category===category).map(row=>row.service))}
 function initCatalogInputs(){
-  $("categoryOptions").innerHTML=optionHtml(categories());
   refreshServices();
-  $("categorySelect").addEventListener("input",refreshServices);
-  $("categorySelect").addEventListener("change",refreshServices);
   $("serviceSelect").addEventListener("input",showServiceDescription);
   $("serviceSelect").addEventListener("change",showServiceDescription);
 }
 function refreshServices(){
-  const category=exact($("categorySelect").value,categories());
-  const list=services(category);
-  $("serviceOptions").innerHTML=optionHtml(list);
-  $("serviceSelect").placeholder=category?"Type ya alphabet se service chunein":"Sabhi services mein type karein";
+  $("serviceOptions").innerHTML=optionHtml(services());
+  $("serviceSelect").placeholder="Type ya alphabet se service chunein";
   showServiceDescription();
 }
 function showServiceDescription(){
-  const category=exact($("categorySelect").value,categories());
-  const service=exact($("serviceSelect").value,services(category));
-  const row=catalog.find(item=>item.service===service&&(!category||item.category===category));
-  $("serviceDescription").textContent=row?.description||"Service select karne par uska description yahan dikhega.";
+  const service=exact($("serviceSelect").value,services());
+  const row=catalog.find(item=>item.service===service);
+  $("serviceDescription").textContent=row?.description||"Service type karein ya alphabetical list se chunein.";
 }
 function renderPopularServices(){
   const featured=catalog.filter((row,index)=>index===catalog.findIndex(x=>x.category===row.category)).slice(0,12);
   $("serviceCards").innerHTML=featured.map(row=>'<button class="service-card catalog-card" type="button" data-category="'+esc(row.category)+'" data-service="'+esc(row.service)+'"><div class="service-icon">🛠️</div><h3>'+esc(row.service)+'</h3><p>'+esc(row.description)+'</p><small>'+esc(row.category)+'</small></button>').join("");
   document.querySelectorAll(".catalog-card").forEach(card=>card.onclick=()=>{
-    $("categorySelect").value=card.dataset.category;
-    refreshServices();
     $("serviceSelect").value=card.dataset.service;
     showServiceDescription();
     document.querySelector(".search-card").scrollIntoView({behavior:"smooth",block:"center"});
@@ -82,9 +74,8 @@ async function loadCatalog(){
 }
 async function searchProfessionals(){
   if(!db)return alert("Supabase configuration missing hai.");
-  const rawCategory=$("categorySelect").value.trim(),rawService=$("serviceSelect").value.trim();
-  const category=exact(rawCategory,categories()),service=exact(rawService,services(category));
-  if(rawCategory&&!category)return alert("List se valid category select karein.");
+  const rawService=$("serviceSelect").value.trim();
+  const service=exact(rawService,services());
   if(rawService&&!service)return alert("List se valid service select karein.");
   const location=$("locationInput").value.trim();
   const safeLocation=location.replace(/[^\p{L}\p{N}\s-]/gu,"").trim();
@@ -94,7 +85,6 @@ async function searchProfessionals(){
       ?"id,name,phone,whatsapp,category,services,village,area,block_name,city,district,state,pincode,experience_years,bio,rating,reviews_count,status,verified_by_admin"
       :"id,name,phone,whatsapp,category,services,area,city,state,pincode,experience_years,bio,rating,reviews_count,status,verified_by_admin";
     let query=db.from("professionals").select(fields).eq("status","approved").eq("verified_by_admin",true).order("rating",{ascending:false}).limit(30);
-    if(category)query=query.eq("category",category);
     if(service)query=query.contains("services",[service]);
     if(safeLocation){
       const locationFilters=structured
