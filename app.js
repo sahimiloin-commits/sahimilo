@@ -59,6 +59,12 @@ async function loadLocations(){
   }
   $("locationOptions").innerHTML=suggestions.map(item=>'<option value="'+esc(item.value)+'" label="'+esc(item.label)+'"></option>').join("");
 }
+const nawadihAliases=["Nawadih","Nauwadih","Nauwadhih"];
+function locationTerms(value){
+  const cleaned=value.trim();
+  return nawadihAliases.some(alias=>alias.localeCompare(cleaned,"en",{sensitivity:"base"})===0)
+    ?nawadihAliases:[cleaned];
+}
 function selectedLocation(value){
   const cleaned=value.trim();
   return locations.find(row=>row.search_name.localeCompare(cleaned,"en",{sensitivity:"base"})===0)
@@ -87,9 +93,9 @@ async function searchProfessionals(){
     let query=db.from("professionals").select(fields).eq("status","approved").eq("verified_by_admin",true).order("rating",{ascending:false}).limit(30);
     if(service)query=query.contains("services",[service]);
     if(safeLocation){
-      const locationFilters=structured
-        ?["village","area","block_name","city","district","state"].map(field=>field+".ilike.%"+safeLocation+"%")
-        :["area","city","state"].map(field=>field+".ilike.%"+safeLocation+"%");
+      const searchTerms=locationTerms(safeLocation);
+      const searchFields=structured?["village","area","block_name","city","district","state"]:["area","city","state"];
+      const locationFilters=searchTerms.flatMap(term=>searchFields.map(field=>field+".ilike.%"+term+"%"));
       if(/^\d{6}$/.test(safeLocation))locationFilters.push("pincode.eq."+safeLocation);
       if(directoryMatch?.pincode&&/^\d{6}$/.test(directoryMatch.pincode))locationFilters.push("pincode.eq."+directoryMatch.pincode);
       query=query.or(locationFilters.join(","));
