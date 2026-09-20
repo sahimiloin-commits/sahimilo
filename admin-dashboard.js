@@ -31,7 +31,7 @@ async function requireAdmin(){
 async function loadApplications(){
   $("adminMessage").classList.add("hidden");
   const {data,error}=await db.from("professionals")
-    .select("id,name,phone,whatsapp,category,services,village,area,block_name,city,district,state,pincode,experience_years,bio,rating,reviews_count,status,verified_mobile,verified_whatsapp,verified_by_admin,created_at")
+    .select("id,name,phone,whatsapp,category,services,village,area,block_name,city,district,state,pincode,experience_years,bio,photo_url,rating,reviews_count,status,verified_mobile,verified_whatsapp,verified_by_admin,created_at")
     .order("created_at",{ascending:false});
   if(error)return showMessage("Applications load nahi hui: "+error.message);
   applications=data||[];
@@ -56,7 +56,7 @@ function render(){
   }
   $("adminTable").innerHTML='<table class="admin-data-table"><thead><tr><th>Professional</th><th>Contact</th><th>Category & Services</th><th>Location</th><th>Experience / Details</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+
     rows.map(item=>'<tr>'+
-      '<td><strong>'+esc(item.name)+'</strong><br><small>ID: '+esc(item.id)+'</small></td>'+
+      '<td><div class="admin-professional-cell">'+(item.photo_url?'<img class="admin-profile-photo" src="'+esc(item.photo_url)+'" alt="">':'<span class="admin-profile-photo placeholder">'+esc((item.name||'P').slice(0,1).toUpperCase())+'</span>')+'<div><strong>'+esc(item.name)+'</strong><br><small>ID: '+esc(item.id)+'</small><br><small>⭐ '+Number(item.rating||0).toFixed(1)+' ('+Number(item.reviews_count||0)+')</small></div></div></td>'+
       '<td>'+esc(item.phone)+'<br>'+esc(item.whatsapp||"")+'</td>'+
       '<td><strong>'+esc(item.category)+'</strong><br>'+esc((item.services||[]).join(", "))+'</td>'+
       '<td>'+esc([item.village,item.area,item.block_name,item.city,item.district,item.state,item.pincode].filter(Boolean).join(", "))+'</td>'+
@@ -66,7 +66,7 @@ function render(){
       '<td><div class="admin-actions">'+
         '<button class="admin-action" data-action="status" data-status="approved" data-id="'+esc(item.id)+'">Approve</button>'+
         '<button class="admin-action" data-action="status" data-status="pending" data-id="'+esc(item.id)+'">Pending</button>'+
-        '<button class="admin-action" data-action="status" data-status="suspended" data-id="'+esc(item.id)+'">Suspend</button>'+
+        '<button class="admin-action" data-action="status" data-status="suspended" data-id="'+esc(item.id)+'">Suspend</button>'+'<button class="admin-action" data-action="verify" data-kind="mobile" data-verified="'+(!item.verified_mobile)+'" data-id="'+esc(item.id)+'">'+(item.verified_mobile?'Unverify mobile':'Verify mobile')+'</button>'+'<button class="admin-action" data-action="verify" data-kind="whatsapp" data-verified="'+(!item.verified_whatsapp)+'" data-id="'+esc(item.id)+'">'+(item.verified_whatsapp?'Unverify WhatsApp':'Verify WhatsApp')+'</button>'+
         '<button class="admin-action admin-delete" data-action="delete" data-name="'+esc(item.name)+'" data-id="'+esc(item.id)+'">Delete</button>'+
       '</div></td></tr>').join("")+'</tbody></table>';
 }
@@ -77,6 +77,15 @@ async function changeStatus(id,status,button){
   button.disabled=false;
   if(error)return showMessage("Status update nahi hua: "+error.message);
   showMessage("Application status "+status+" kar diya gaya.",true);
+  await loadApplications();
+}
+
+async function changeVerification(id,kind,verified,button){
+  button.disabled=true;
+  const {error}=await db.rpc("admin_set_professional_verification",{professional_uuid:id,verification_type:kind,is_verified:verified});
+  button.disabled=false;
+  if(error)return showMessage("Verification update nahi hua: "+error.message);
+  showMessage((kind==="mobile"?"Mobile":"WhatsApp")+" verification update ho gaya.",true);
   await loadApplications();
 }
 
@@ -95,6 +104,7 @@ document.addEventListener("click",event=>{
   const button=event.target.closest("[data-action]");
   if(!button)return;
   if(button.dataset.action==="status")changeStatus(button.dataset.id,button.dataset.status,button);
+  if(button.dataset.action==="verify")changeVerification(button.dataset.id,button.dataset.kind,button.dataset.verified==="true",button);
   if(button.dataset.action==="delete")deleteApplication(button.dataset.id,button.dataset.name,button);
 });
 $("adminSearch").addEventListener("input",render);
