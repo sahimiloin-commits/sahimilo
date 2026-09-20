@@ -50,12 +50,8 @@ function selectedLocation(value){
     ||locations.find(row=>row.pincode===cleaned)||null;
 }
 async function loadCatalog(){
-  if(db){
-    const {data,error}=await db.from("service_catalog").select("category,service,description,sort_order").eq("active",true).order("sort_order");
-    if(!error&&data?.length)catalog=data;
-  }
-  initCatalogInputs();
-  renderPopularServices();
+  if(db){const [{data:master},{data:custom}]=await Promise.all([db.from("service_catalog").select("category,service,description,sort_order").eq("active",true).order("sort_order"),db.from("professional_service_catalog").select("category,service,description").eq("active",true).order("service")]);const merged=[...(master||[]),...(custom||[])];if(merged.length)catalog=merged.filter((row,i,all)=>i===all.findIndex(x=>x.service.toLowerCase()===row.service.toLowerCase()))}
+  initCatalogInputs();renderPopularServices();
 }
 function parseLocationQuery(raw){
   const cleaned=raw.trim(),parts=cleaned.split(/\s+—\s+/);if(parts.length===2)return{name:parts[0].trim(),type:parts[1].trim()};
