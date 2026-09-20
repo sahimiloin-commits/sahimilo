@@ -35,11 +35,8 @@ function renderPopularServices(){
   });
 }
 async function loadLocations(){
-  if(!db)return;const rows=[];
-  for(let from=0;;from+=1000){const {data,error}=await db.from("location_directory").select("entity_type,search_name,state,district,block_subdistrict,village,pincode").eq("active",true).order("search_name").range(from,from+999);if(error){console.warn("Location directory load failed:",error.message);break}rows.push(...(data||[]));if(!data||data.length<1000)break}
-  locations=rows;const map=new Map(),add=(name,type)=>{if(name){const value=String(name).trim()+" — "+type;map.set(value.toLowerCase(),value)}};
-  rows.forEach(r=>{if(r.entity_type==="village")add(r.village||r.search_name,"Village");add(r.block_subdistrict,"City");add(r.district,"District");if(/^\d{6}$/.test(r.pincode||""))add(r.pincode,"PIN Code")});
-  $("locationOptions").innerHTML=[...map.values()].sort(sortText).map(value=>'<option value="'+esc(value)+'"></option>').join("");
+  locations=[{block_subdistrict:"Sitamarhi Town",search_name:"Sitamarhi Town"},{block_subdistrict:"Dumra",search_name:"Dumra"}];
+  $("locationOptions").innerHTML=['Sitamarhi Town — City','Dumra — City'].map(value=>'<option value="'+esc(value)+'"></option>').join("");
 }
 const nawadihAliases=["Nawadih","Nauwadih","Nauwadhih"];
 function locationTerms(value){
