@@ -31,7 +31,7 @@ async function requireAdmin(){
 async function loadApplications(){
   $("adminMessage").classList.add("hidden");
   const {data,error}=await db.from("professionals")
-    .select("id,name,phone,whatsapp,category,services,village,area,block_name,city,district,state,pincode,experience_years,bio,photo_url,rating,reviews_count,status,verified_mobile,verified_whatsapp,verified_by_admin,created_at")
+    .select("id,user_id,name,phone,whatsapp,category,services,village,area,block_name,city,district,state,pincode,experience_years,bio,photo_url,rating,reviews_count,status,verified_mobile,verified_whatsapp,verified_by_admin,account_claim_status,created_at")
     .order("created_at",{ascending:false});
   if(error)return showMessage("Applications load nahi hui: "+error.message);
   applications=data||[];
@@ -49,14 +49,15 @@ function render(){
     statCard("Total",applications.length)+
     statCard("Pending",applications.filter(x=>x.status==="pending").length)+
     statCard("Approved",applications.filter(x=>x.status==="approved").length)+
-    statCard("Suspended",applications.filter(x=>x.status==="suspended").length);
+    statCard("Suspended",applications.filter(x=>x.status==="suspended").length)+
+    statCard("Unclaimed",applications.filter(x=>x.account_claim_status!=="claimed").length);
   if(!rows.length){
     $("adminTable").innerHTML='<div class="admin-empty">No matching professional applications found.</div>';
     return;
   }
   $("adminTable").innerHTML='<table class="admin-data-table"><thead><tr><th>Professional</th><th>Contact</th><th>Category & Services</th><th>Location</th><th>Experience / Details</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+
     rows.map(item=>'<tr>'+
-      '<td><div class="admin-professional-cell">'+(item.photo_url?'<img class="admin-profile-photo" src="'+esc(item.photo_url)+'" alt="">':'<span class="admin-profile-photo placeholder">'+esc((item.name||'P').slice(0,1).toUpperCase())+'</span>')+'<div><strong>'+esc(item.name)+'</strong><br><small>ID: '+esc(item.id)+'</small><br><small>⭐ '+Number(item.rating||0).toFixed(1)+' ('+Number(item.reviews_count||0)+')</small></div></div></td>'+
+      '<td><div class="admin-professional-cell">'+(item.photo_url?'<img class="admin-profile-photo" src="'+esc(item.photo_url)+'" alt="">':'<span class="admin-profile-photo placeholder">'+esc((item.name||'P').slice(0,1).toUpperCase())+'</span>')+'<div><strong>'+esc(item.name)+'</strong><br><small>Account: '+esc(item.account_claim_status||"claimed")+'</small><br><small>ID: '+esc(item.id)+'</small><br><small>⭐ '+Number(item.rating||0).toFixed(1)+' ('+Number(item.reviews_count||0)+')</small></div></div></td>'+
       '<td>'+esc(item.phone)+'<br>'+esc(item.whatsapp||"")+'</td>'+
       '<td><strong>'+esc(item.category)+'</strong><br>'+esc((item.services||[]).join(", "))+'</td>'+
       '<td>'+esc([item.village,item.area,item.block_name,item.city,item.district,item.state,item.pincode].filter(Boolean).join(", "))+'</td>'+
@@ -106,6 +107,16 @@ document.addEventListener("click",event=>{
   if(button.dataset.action==="status")changeStatus(button.dataset.id,button.dataset.status,button);
   if(button.dataset.action==="verify")changeVerification(button.dataset.id,button.dataset.kind,button.dataset.verified==="true",button);
   if(button.dataset.action==="delete")deleteApplication(button.dataset.id,button.dataset.name,button);
+});
+$("inviteProfessionalForm").addEventListener("submit",async event=>{
+  event.preventDefault();const name=$("inviteProfessionalName").value.trim(),email=$("inviteProfessionalEmail").value.trim().toLowerCase(),phone=$("inviteProfessionalPhone").value.replace(/\D/g,""),city=$("inviteProfessionalCity").value,button=$("inviteProfessionalSubmit"),notice=$("inviteProfessionalMessage");
+  if(!/^[^\s@]+@gmail\.com$/i.test(email)){notice.textContent="Valid professional Gmail enter karein.";notice.className="notice notice-error";return}
+  if(phone.length!==10){notice.textContent="Valid 10-digit mobile number enter karein.";notice.className="notice notice-error";return}
+  button.disabled=true;button.textContent="Creating profile...";
+  const {data,error}=await db.functions.invoke("invite-professional",{body:{name,email,phone,city}});
+  button.disabled=false;button.textContent="Create Profile & Send Claim Link";
+  if(error||data?.error){notice.textContent="Account create nahi hua: "+(data?.error||error?.message||"Unknown error");notice.className="notice notice-error";return}
+  event.target.reset();notice.textContent="Professional profile create ho gaya aur claim link Gmail par bhej diya gaya.";notice.className="notice notice-ok";await loadApplications();
 });
 $("adminSearch").addEventListener("input",render);
 $("adminFilter").addEventListener("change",render);
