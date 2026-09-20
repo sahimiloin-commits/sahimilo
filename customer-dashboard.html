@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Customer Dashboard | SahiMilo</title><link rel="icon" type="image/png" href="sahimilo-logo-selected.png"><link rel="stylesheet" href="style.css?v=20260920-trust1"><link rel="stylesheet" href="identity-verification.css?v=1">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
-  <script defer src="config.js?v=20260918-2"></script><script defer src="customer-dashboard.js?v=7"></script><script defer src="identity-verification.js?v=1"></script><style>
+  <script defer src="config.js?v=20260918-2"></script><script defer src="customer-dashboard.js?v=8"></script><script defer src="identity-verification.js?v=1"></script><style>
     body{background:#f5f8f5}.account-shell{min-height:calc(100vh - 73px);padding:38px 0 70px}
     .account-card{width:min(520px,94%);margin:auto;background:#fff;border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:var(--shadow)}
     .account-card h1{font-size:32px;letter-spacing:-1px;margin:5px 0 6px}.account-card>p{color:var(--muted);margin:0 0 20px}
@@ -19,7 +19,7 @@
   <div class="profile-trust-head">
     <div class="profile-photo-box">
       <div id="customerPhotoPreview" class="profile-photo-preview" aria-label="Customer profile photo"></div>
-      <div><h2>My profile</h2><p class="account-note">Clear profile photo upload karein. JPG, PNG ya WebP, maximum 2 MB.</p><label class="secondary-btn photo-upload-btn">Choose photo<input id="customerPhotoInput" type="file" accept="image/jpeg,image/png,image/webp" hidden></label><small id="customerPhotoStatus" class="service-description"></small></div>
+      <div><h2>My profile <span id="customerClaimStatus" class="status-badge">claimed</span></h2><p class="account-note">Clear profile photo upload karein. JPG, PNG ya WebP, maximum 2 MB.</p><label class="secondary-btn photo-upload-btn">Choose photo<input id="customerPhotoInput" type="file" accept="image/jpeg,image/png,image/webp" hidden></label><small id="customerPhotoStatus" class="service-description"></small></div>
     </div>
     <div class="profile-completeness"><div class="completion-row"><strong>Profile completeness</strong><span id="customerCompletionText">0%</span></div><div class="completion-track"><span id="customerCompletionBar"></span></div><p id="customerCompletionHint" class="account-note">Apni details complete karein.</p></div>
   </div>
