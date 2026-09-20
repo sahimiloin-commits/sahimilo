@@ -13,7 +13,10 @@ function services(category=""){return unique(catalog.filter(row=>!category||row.
 function initCatalogInputs(){
   refreshServices();
   $("serviceSelect").addEventListener("input",showServiceDescription);
-  $("serviceSelect").addEventListener("change",showServiceDescription);\n  $("addElectricalWork").addEventListener("click",addElectricalWork);\n  $("serviceSelect").addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();addElectricalWork()}});\n  renderSelectedElectricalWorks();
+  $("serviceSelect").addEventListener("change",showServiceDescription);
+  $("addElectricalWork").addEventListener("click",addElectricalWork);
+  $("serviceSelect").addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();addElectricalWork()}});
+  renderSelectedElectricalWorks();
 }
 function refreshServices(){
   $("serviceOptions").innerHTML=optionHtml(services());
@@ -29,7 +32,8 @@ function renderPopularServices(){
   const featured=catalog.filter((row,index)=>index===catalog.findIndex(x=>x.category===row.category)).slice(0,12);
   $("serviceCards").innerHTML=featured.map(row=>'<button class="service-card catalog-card" type="button" data-category="'+esc(row.category)+'" data-service="'+esc(row.service)+'"><div class="service-icon">🛠️</div><h3>'+esc(row.service)+'</h3><p>'+esc(row.description)+'</p><small>'+esc(row.category)+'</small></button>').join("");
   document.querySelectorAll(".catalog-card").forEach(card=>card.onclick=()=>{
-    $("serviceSelect").value=card.dataset.service;\n    addElectricalWork();
+    $("serviceSelect").value=card.dataset.service;
+    addElectricalWork();
     document.querySelector(".search-card").scrollIntoView({behavior:"smooth",block:"center"});
   });
 }
@@ -79,7 +83,8 @@ async function searchProfessionals(){
   let query=db.from("professionals").select("id,user_id,name,phone,whatsapp,services,service_villages,service_cities,service_districts,service_pincodes,experience_years,bio,photo_url,rating,reviews_count,status,verified_mobile,verified_whatsapp,verified_by_admin").eq("status","approved").eq("verified_by_admin",true).order("rating",{ascending:false}).limit(100);
   let {data,error}=await query;if(error)return alert("Profiles load nahi ho paaye: "+error.message);const userIds=[...new Set((data||[]).map(p=>p.user_id).filter(Boolean))];let verifiedIds=new Set();if(userIds.length){const {data:badges}=await db.from("identity_badges").select("user_id").eq("verified",true).in("user_id",userIds);verifiedIds=new Set((badges||[]).map(x=>x.user_id))}(data||[]).forEach(p=>p.identity_verified=verifiedIds.has(p.user_id));
   const field={Village:"service_villages",City:"service_cities",District:"service_districts","PIN Code":"service_pincodes"}[location.type],needle=location.name.toLowerCase();
-  data=(data||[]).filter(p=>(p[field]||[]).some(v=>String(v).trim().toLowerCase()===needle));\n  const wanted=selectedServices.map(service=>service.toLowerCase());data=data.filter(p=>(p.services||[]).some(service=>wanted.includes(String(service).toLowerCase())));
+  data=(data||[]).filter(p=>(p[field]||[]).some(v=>String(v).trim().toLowerCase()===needle));
+  const wanted=selectedServices.map(service=>service.toLowerCase());data=data.filter(p=>(p.services||[]).some(service=>wanted.includes(String(service).toLowerCase())));
   const coverage=p=>[...(p.service_villages||[]),...(p.service_cities||[]),...(p.service_districts||[]),...(p.service_pincodes||[])].join(", ");
   const photo=p=>p.photo_url?'<img class="avatar-photo" src="'+esc(p.photo_url)+'" alt="'+esc(p.name)+' profile photo" loading="lazy">':esc((p.name||"P").slice(0,1).toUpperCase());
   const badges=p=>[p.identity_verified?'<span class="public-trust-badge verified">✓ ID Verified by SahiMilo</span>':'',p.verified_mobile?'<span class="public-trust-badge">✓ Mobile</span>':'',p.verified_whatsapp?'<span class="public-trust-badge">✓ WhatsApp</span>':''].filter(Boolean).join("");
