@@ -29,7 +29,7 @@ function showServiceDescription(){
   $("serviceDescription").textContent=row?.description||"List se select karein ya electrical work manually type karein.";
 }
 function renderPopularServices(){
-  const featured=catalog.filter((row,index)=>index===catalog.findIndex(x=>x.category===row.category)).slice(0,12);
+  const featured=catalog.slice(0,12);
   $("serviceCards").innerHTML=featured.map(row=>'<button class="service-card catalog-card" type="button" data-category="'+esc(row.category)+'" data-service="'+esc(row.service)+'"><div class="service-icon">🛠️</div><h3>'+esc(row.service)+'</h3><p>'+esc(row.description)+'</p><small>'+esc(row.category)+'</small></button>').join("");
   document.querySelectorAll(".catalog-card").forEach(card=>card.onclick=()=>{
     $("serviceSelect").value=card.dataset.service;
