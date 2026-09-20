@@ -1,0 +1,4 @@
+/* global supabase, SAHIMILO_CONFIG */
+const db=window.supabase?.createClient(SAHIMILO_CONFIG.supabaseUrl,SAHIMILO_CONFIG.supabasePublishableKey),$=id=>document.getElementById(id);
+function message(text,ok=false){$("recoveryMessage").textContent=text;$("recoveryMessage").className="notice "+(ok?"notice-ok":"notice-error")}
+$("forgotPinForm").onsubmit=async e=>{e.preventDefault();const email=$("recoveryEmail").value.trim().toLowerCase(),type=new URLSearchParams(location.search).get("type")==="customer"?"customer":"professional";if(!/^[^\s@]+@gmail\.com$/i.test(email))return message("Valid Gmail address enter karein.");const button=$("recoverySubmit");button.disabled=true;await db.auth.resetPasswordForEmail(email,{redirectTo:location.origin+"/reset-pin.html?mode=recovery&type="+type});button.disabled=false;$("forgotPinForm").reset();message("Agar is Gmail se account bana hai, reset link bhej diya gaya hai. Spam folder bhi check karein.",true)};
