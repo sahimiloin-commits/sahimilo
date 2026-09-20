@@ -115,7 +115,11 @@ $("inviteProfessionalForm").addEventListener("submit",async event=>{
   button.disabled=true;button.textContent="Creating profile...";
   const {data,error}=await db.functions.invoke("invite-professional",{body:{name,email,phone,city}});
   button.disabled=false;button.textContent="Create Profile & Send Claim Link";
-  if(error||data?.error){notice.textContent="Account create nahi hua: "+(data?.error||error?.message||"Unknown error");notice.className="notice notice-error";return}
+  let errorMessage=data?.error||"";
+  if(error?.context instanceof Response){
+    try{const responseBody=await error.context.clone().json();errorMessage=responseBody?.error||errorMessage}catch{}
+  }
+  if(error||errorMessage){notice.textContent="Account create nahi hua: "+(errorMessage||error?.message||"Unknown error");notice.className="notice notice-error";return}
   event.target.reset();notice.textContent="Professional profile create ho gaya aur claim link Gmail par bhej diya gaya.";notice.className="notice notice-ok";await loadApplications();
 });
 $("adminSearch").addEventListener("input",render);
