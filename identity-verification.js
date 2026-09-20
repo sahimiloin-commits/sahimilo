@@ -54,5 +54,5 @@ async function reset(){
  if(paths.length)await db.storage.from("identity-documents").remove(paths);
  record=null;$("identityForm").reset();render();message("Ab nayi ID submit kar sakte hain.",true);
 }
-document.addEventListener("DOMContentLoaded",()=>{if(!$("identityVerificationSection"))return;$("identityForm").addEventListener("submit",submit);$("identityReset").addEventListener("click",reset);$("identityType").addEventListener("change",()=>{$("aadhaarNote").classList.toggle("hidden",$("identityType").value!=="masked_aadhaar")});load()});
+document.addEventListener("DOMContentLoaded",()=>{if(!$("identityVerificationSection"))return;$("identityForm").addEventListener("submit",submit);$("identityReset").addEventListener("click",reset);$("identityType").addEventListener("change",()=>{$("aadhaarNote").classList.toggle("hidden",$("identityType").value!=="aadhaar")});load()});
 })();
