@@ -114,13 +114,27 @@ $("inviteProfessionalForm").addEventListener("submit",async event=>{
   if(phone.length!==10){notice.textContent="Valid 10-digit mobile number enter karein.";notice.className="notice notice-error";return}
   button.disabled=true;button.textContent="Creating profile...";
   const {data,error}=await db.functions.invoke("invite-professional",{body:{name,email,phone,city}});
-  button.disabled=false;button.textContent="Create Profile & Send Claim Link";
+  button.disabled=false;button.textContent="Create Profile & Generate Claim Link";
   let errorMessage=data?.error||"";
   if(error?.context instanceof Response){
     try{const responseBody=await error.context.clone().json();errorMessage=responseBody?.error||errorMessage}catch{}
   }
   if(error||errorMessage){notice.textContent="Account create nahi hua: "+(errorMessage||error?.message||"Unknown error");notice.className="notice notice-error";return}
-  event.target.reset();notice.textContent="Professional profile create ho gaya aur claim link Gmail par bhej diya gaya.";notice.className="notice notice-ok";await loadApplications();
+  event.target.reset();
+  notice.className="notice notice-ok";
+  notice.textContent="Professional profile create ho gaya. Neeche ka secure claim link professional ko bhejein: ";
+  const claimLink=String(data?.claimLink||"");
+  const claimInput=document.createElement("input");
+  claimInput.type="text";claimInput.readOnly=true;claimInput.value=claimLink;claimInput.setAttribute("aria-label","Professional claim link");
+  claimInput.style.cssText="display:block;width:100%;margin:10px 0;padding:10px;border:1px solid #b7d8c2;border-radius:8px;background:#fff";
+  const copyButton=document.createElement("button");
+  copyButton.type="button";copyButton.className="secondary-btn";copyButton.textContent="Copy Claim Link";
+  copyButton.addEventListener("click",async()=>{await navigator.clipboard.writeText(claimLink);copyButton.textContent="Copied";});
+  const emailLink=document.createElement("a");
+  emailLink.className="secondary-btn";emailLink.style.marginLeft="8px";emailLink.textContent="Send by Email";
+  emailLink.href="mailto:"+encodeURIComponent(data?.email||email)+"?subject="+encodeURIComponent("Claim your SahiMilo professional account")+"&body="+encodeURIComponent("Namaste "+name+",\n\nApna SahiMilo professional account claim karke 6-digit PIN banane ke liye is secure link ko open karein:\n"+claimLink+"\n\nSahiMilo");
+  notice.append(claimInput,copyButton,emailLink);
+  await loadApplications();
 });
 $("adminSearch").addEventListener("input",render);
 $("adminFilter").addEventListener("change",render);
