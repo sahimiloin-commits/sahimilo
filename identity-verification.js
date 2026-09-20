@@ -21,7 +21,7 @@ async function load(){
  user=session.user;
  const {data,error}=await db.from("identity_verifications").select("id,document_type,document_paths,status,rejection_reason,submitted_at").eq("user_id",user.id).maybeSingle();
  if(error)return message("Verification status load nahi hua: "+error.message);
- record=data;render();
+ record=data;render();const {data:ownerProfile}=await db.from("user_profiles").select("account_claim_status").eq("id",user.id).maybeSingle();const claimed=ownerProfile?.account_claim_status==="claimed",customerBadge=$("customerClaimStatus"),professionalBadge=$("accountClaimBadge");if(customerBadge){customerBadge.textContent=claimed?"Account claimed":"Account access pending";customerBadge.className="status-badge "+(claimed?"status-approved":"status-pending")}if(professionalBadge){professionalBadge.textContent=(claimed?"✓ ":"○ ")+(claimed?"Account claimed":"Account access pending");professionalBadge.className="trust-badge "+(claimed?"verified":"pending")}
 }
 function valid(file){if(!file)return true;if(!allowed.includes(file.type)){message("Sirf JPG, PNG, WebP ya PDF upload karein.");return false}if(file.size>max){message("Har file maximum 5 MB honi chahiye.");return false}return true}
 async function upload(file,side){
