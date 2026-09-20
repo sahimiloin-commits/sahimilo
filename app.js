@@ -35,29 +35,11 @@ function renderPopularServices(){
   });
 }
 async function loadLocations(){
-  if(!db)return;
-  const rows=[];
-  for(let from=0;;from+=1000){
-    const {data,error}=await db.from("location_directory")
-      .select("entity_type,search_name,state,district,block_subdistrict,village,police_station,post_office,pincode")
-      .eq("active",true).order("search_name").range(from,from+999);
-    if(error){console.warn("Location directory load failed:",error.message);break}
-    rows.push(...(data||[]));
-    if(!data||data.length<1000)break;
-  }
-  locations=rows;
-  const suggestions=[];
-  const seen=new Set();
-  for(const row of locations){
-    const type=row.entity_type==="village"?"Village":row.entity_type==="post_office"?"Post Office":"Police Station";
-    const details=[type,row.block_subdistrict,row.district,row.pincode].filter(Boolean).join(" • ");
-    const key="name:"+row.search_name.toLowerCase()+":"+details.toLowerCase();
-    if(!seen.has(key)){seen.add(key);suggestions.push({value:row.search_name,label:details})}
-  }
-  for(const pin of unique(locations.map(row=>/^\d{6}$/.test(row.pincode||"")?row.pincode:""))){
-    suggestions.push({value:pin,label:"PIN Code • Sitamarhi"});
-  }
-  $("locationOptions").innerHTML=suggestions.map(item=>'<option value="'+esc(item.value)+'" label="'+esc(item.label)+'"></option>').join("");
+  if(!db)return;const rows=[];
+  for(let from=0;;from+=1000){const {data,error}=await db.from("location_directory").select("entity_type,search_name,state,district,block_subdistrict,village,pincode").eq("active",true).order("search_name").range(from,from+999);if(error){console.warn("Location directory load failed:",error.message);break}rows.push(...(data||[]));if(!data||data.length<1000)break}
+  locations=rows;const map=new Map(),add=(name,type)=>{if(name){const value=String(name).trim()+" — "+type;map.set(value.toLowerCase(),value)}};
+  rows.forEach(r=>{if(r.entity_type==="village")add(r.village||r.search_name,"Village");add(r.block_subdistrict,"City");add(r.district,"District");if(/^\d{6}$/.test(r.pincode||""))add(r.pincode,"PIN Code")});
+  $("locationOptions").innerHTML=[...map.values()].sort(sortText).map(value=>'<option value="'+esc(value)+'"></option>').join("");
 }
 const nawadihAliases=["Nawadih","Nauwadih","Nauwadhih"];
 function locationTerms(value){
@@ -78,35 +60,24 @@ async function loadCatalog(){
   initCatalogInputs();
   renderPopularServices();
 }
+function parseLocationQuery(raw){
+  const cleaned=raw.trim(),parts=cleaned.split(/\s+—\s+/);if(parts.length===2)return{name:parts[0].trim(),type:parts[1].trim()};
+  if(/^\d{6}$/.test(cleaned))return{name:cleaned,type:"PIN Code"};
+  const same=v=>String(v||"").localeCompare(cleaned,"en",{sensitivity:"base"})===0;
+  if(locations.some(r=>same(r.district)))return{name:cleaned,type:"District"};
+  if(locations.some(r=>same(r.block_subdistrict)))return{name:cleaned,type:"City"};
+  if(locations.some(r=>same(r.village)||same(r.search_name)))return{name:cleaned,type:"Village"};
+  return null;
+}
 async function searchProfessionals(){
   if(!db)return alert("Supabase configuration missing hai.");
-  const rawService=$("serviceSelect").value.trim(),service=exact(rawService,services());
-  if(rawService&&!service)return alert("List se valid service select karein.");
-  const raw=$("locationInput").value.trim(),needle=raw.toLowerCase();
-  if(!needle)return alert("Village, city, district ya PIN code enter karein.");
-  const aliases=locationTerms(raw).map(x=>x.toLowerCase());
-  const same=v=>aliases.includes(String(v||"").trim().toLowerCase());
-  const matchingRows=locations.filter(r=>same(r.search_name)||same(r.village)||same(r.block_subdistrict)||same(r.district)||same(r.pincode));
-  const wanted={
-    villages:unique(matchingRows.flatMap(r=>[r.village,r.search_name]).filter(Boolean)).map(x=>x.toLowerCase()),
-    cities:unique(matchingRows.map(r=>r.block_subdistrict).filter(Boolean)).map(x=>x.toLowerCase()),
-    districts:unique(matchingRows.map(r=>r.district).filter(Boolean)).map(x=>x.toLowerCase()),
-    pincodes:unique(matchingRows.map(r=>r.pincode).filter(Boolean)).map(x=>x.toLowerCase())
-  };
-  let query=db.from("professionals").select("id,name,phone,whatsapp,services,service_villages,service_cities,service_districts,service_pincodes,village,area,block_name,city,district,state,pincode,experience_years,bio,rating,reviews_count,status,verified_by_admin").eq("status","approved").eq("verified_by_admin",true).order("rating",{ascending:false}).limit(100);
-  if(service)query=query.contains("services",[service]);
+  const rawService=$("serviceSelect").value.trim(),service=exact(rawService,services());if(rawService&&!service)return alert("List se valid service select karein.");
+  const location=parseLocationQuery($("locationInput").value);if(!location)return alert("List se Village, City, District ya PIN Code select karein.");
+  let query=db.from("professionals").select("id,name,phone,whatsapp,services,service_villages,service_cities,service_districts,service_pincodes,experience_years,bio,rating,reviews_count,status,verified_by_admin").eq("status","approved").eq("verified_by_admin",true).order("rating",{ascending:false}).limit(100);if(service)query=query.contains("services",[service]);
   let {data,error}=await query;if(error)return alert("Profiles load nahi ho paaye: "+error.message);
-  const intersects=(values,wantedValues)=>values.some(v=>wantedValues.includes(String(v).trim().toLowerCase()));
-  data=(data||[]).filter(p=>{
-    const villages=p.service_villages?.length?p.service_villages:[p.village].filter(Boolean);
-    const cities=p.service_cities?.length?p.service_cities:[p.city,p.block_name].filter(Boolean);
-    const districts=p.service_districts?.length?p.service_districts:[p.district].filter(Boolean);
-    const pins=p.service_pincodes?.length?p.service_pincodes:[p.pincode].filter(Boolean);
-    return [...villages,...cities,...districts,...pins].some(same)
-      ||intersects(villages,wanted.villages)||intersects(cities,wanted.cities)
-      ||intersects(districts,wanted.districts)||intersects(pins,wanted.pincodes);
-  });
-  const coverage=p=>[...(p.service_villages||[]),...(p.service_cities||[]),...(p.service_districts||[]),...(p.service_pincodes||[])].join(", ")||[p.village,p.city,p.district,p.pincode].filter(Boolean).join(", ");
+  const field={Village:"service_villages",City:"service_cities",District:"service_districts","PIN Code":"service_pincodes"}[location.type],needle=location.name.toLowerCase();
+  data=(data||[]).filter(p=>(p[field]||[]).some(v=>String(v).trim().toLowerCase()===needle));
+  const coverage=p=>[...(p.service_villages||[]),...(p.service_cities||[]),...(p.service_districts||[]),...(p.service_pincodes||[])].join(", ");
   $("results").classList.remove("hidden");$("resultSummary").textContent=(data?.length||0)+" approved professional mile.";$("noResults").classList.toggle("hidden",!!data?.length);
   $("resultsGrid").innerHTML=data.map(p=>'<article class="professional-card"><div class="pro-head"><div class="avatar">'+esc((p.name||"P").slice(0,1).toUpperCase())+'</div><div><div class="pro-name">'+esc(p.name)+'</div><div class="pro-service">✓ SahiMilo approved</div></div></div><div class="rating">⭐ '+Number(p.rating||0).toFixed(1)+" · "+(p.experience_years||0)+' yrs exp.</div><div class="pro-meta"><span>📍 '+esc(coverage(p))+'</span><span>🛠️ '+esc((p.services||[]).join(", "))+'</span><span>'+esc(p.bio||"")+'</span></div><a class="primary-btn call-btn" href="tel:'+esc(normalPhone(p.phone))+'">📞 Call professional</a><a class="secondary-btn call-btn" target="_blank" rel="noopener" href="https://wa.me/'+digits(p.whatsapp||p.phone)+'">WhatsApp</a></article>').join("");
   $("results").scrollIntoView({behavior:"smooth"});
