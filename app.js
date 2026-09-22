@@ -12,8 +12,10 @@ const exact=(value,values)=>values.find(item=>item.localeCompare(value.trim(),"e
 
 function categories(){return PILOT_CATEGORIES}
 function matchCategory(value){const q=value.trim().toLowerCase();if(!q)return "";return PILOT_CATEGORIES.find(x=>x.toLowerCase()===q)||PILOT_CATEGORIES.find(x=>CATEGORY_ALIASES[x].some(k=>k.includes(q)||q.includes(k)))||""}
+function suggestCategories(){const q=$("serviceSelect").value.trim().toLowerCase();const matches=!q?PILOT_CATEGORIES:PILOT_CATEGORIES.filter(category=>category.toLowerCase().includes(q)||CATEGORY_ALIASES[category].some(keyword=>keyword.includes(q)||q.includes(keyword)));$("serviceOptions").innerHTML=optionHtml(matches)}
 function initCatalogInputs(){
   $("serviceOptions").innerHTML=optionHtml(categories());
+  $("serviceSelect").addEventListener("input",suggestCategories);
   $("serviceSelect").addEventListener("change",()=>{const category=matchCategory($("serviceSelect").value);if(category)$("serviceSelect").value=category});
 }
 function renderPopularServices(){
