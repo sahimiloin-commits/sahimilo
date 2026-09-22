@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="SahiMilo - Find trusted electricians in Sitamarhi Town and Dumra.">
-  <title>SahiMilo | Find Electricians Near You</title><link rel="icon" type="image/png" href="sahimilo-logo-selected.png">
+  <meta name="description" content="SahiMilo - Find trusted local professionals in Sitamarhi Town and Dumra.">
+  <title>SahiMilo | Find Trusted Professionals Near You</title><link rel="icon" type="image/png" href="sahimilo-logo-selected.png">
   <link rel="stylesheet" href="style.css?v=20260920-trust1">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script>
   <script defer src="config.js?v=20260918-2"></script>
@@ -34,18 +34,17 @@
         <div class="hero-copy">
           <div class="eyebrow">LOCAL KAAM, SAHI PROFESSIONAL</div>
           <h1><span>SahiMilo</span></h1>
-          <p class="hero-sub"><em>Find the Right Electrician Near You</em></p>
-          <p class="hero-sub">Wiring se short circuit, fan se MCB repair tak.<br>Apne area ke <strong>right electrician</strong> dhoondhiye, profile dekhiye aur directly call kijiye.</p>
+          <p class="hero-sub"><em>Find the Right Professionals Near You</em></p>
+          <p class="hero-sub">Electrician se Plumber, AC Technician se Home Painter aur CCTV Technician tak.<br>Apne area ke <strong>right professionals</strong> dhoondhiye, profile dekhiye aur directly call kijiye.</p>
 
           <div class="search-card">
-            <div class="step-label">Electrical work aur location select karein</div>
+            <div class="step-label">Kaam aur location select karein</div>
             <div class="field-row">
               <label class="field full">
-                <span>What electrical work do you need?</span>
-                <div class="service-add-row"><input id="serviceSelect" type="search" list="serviceOptions" autocomplete="off" placeholder="Select karein ya electrical work type karein"><button id="addElectricalWork" class="secondary-btn" type="button">Add</button></div>
+                <span>What service do you need?</span>
+                <input id="serviceSelect" type="search" list="serviceOptions" autocomplete="off" placeholder="Electrician, Plumber, AC Technician...">
                 <datalist id="serviceOptions"></datalist>
-                <small id="serviceDescription" class="service-description">List se multiple services select karein ya electrical work manually type karein.</small>
-                <div id="selectedElectricalWorks" class="service-picker"></div>
+                <small class="service-description">Type karte hi matching category dikhegi. List se ek category select karein.</small>
               </label>
             </div>
             <div class="field-row">
@@ -55,7 +54,7 @@
                 <datalist id="locationOptions"></datalist>
               </label>
             </div>
-            <button id="findBtn" class="primary-btn" type="button">Find Electricians <span>→</span></button>
+            <button id="findBtn" class="primary-btn" type="button">Find Professionals <span>→</span></button>
             <p class="tiny-note">Pilot abhi sirf Sitamarhi Town aur Dumra mein available hai.</p>
           </div>
 
@@ -80,7 +79,7 @@
               <div class="pin p4">🪛</div>
               <div class="you">YOU</div>
             </div>
-            <div class="map-footer"><strong>Local electricians</strong><span>Easy. Direct. Local.</span></div>
+            <div class="map-footer"><strong>Local professionals</strong><span>Easy. Direct. Local.</span></div>
           </div>
         </div>
       </div>
@@ -91,16 +90,16 @@
         <div class="section-heading">
           <div>
             <div class="eyebrow">SAHIMILO RESULTS</div>
-            <h2>Available electricians</h2>
-            <p id="resultSummary">Aapke area ke electricians yahan dikhenge.</p>
+            <h2>Available professionals</h2>
+            <p id="resultSummary">Aapke area ke professionals yahan dikhenge.</p>
           </div>
           <button id="resetBtn" class="secondary-btn" type="button">← Search again</button>
         </div>
         <div id="resultsGrid" class="results-grid"></div>
         <div id="noResults" class="no-results hidden">
           <div class="empty-icon">🔎</div>
-          <h3>Abhi electrician nahi mila</h3>
-          <p>WhatsApp ya call karke SahiMilo team se available electrician ke baare mein pooch sakte hain.</p>
+          <h3>Abhi professional nahi mila</h3>
+          <p>WhatsApp ya call karke SahiMilo team se available professional ke baare mein pooch sakte hain.</p>
           <div class="empty-actions">
             <a class="primary-btn" href="https://wa.me/?text=Hello%20SahiMilo%2C%20mere%20area%20mein%20professional%20chahiye." target="_blank" rel="noopener"><img class="whatsapp-logo" src="whatsapp-logo.svg" alt="" aria-hidden="true"> WhatsApp SahiMilo</a>
             <a class="secondary-btn" href="tel:+919999999999">Call SahiMilo</a>
@@ -114,8 +113,8 @@
         <div class="section-heading centered">
           <div>
             <div class="eyebrow">POPULAR SERVICES</div>
-            <h2>Electrical services</h2>
-            <p>Ghar, dukaan aur office ke common electrical kaam.</p>
+            <h2>Pilot services</h2>
+            <p>Sitamarhi Town aur Dumra ke liye five trusted service categories.</p>
           </div>
         </div>
         <div id="serviceCards" class="service-grid"></div>
@@ -131,8 +130,8 @@
           </div>
         </div>
         <div class="steps">
-          <div class="step"><div class="step-num">01</div><div class="step-icon">🔎</div><h3>Kaam batao</h3><p>Electrical work aur apni location select karein.</p></div>
-          <div class="step"><div class="step-num">02</div><div class="step-icon">👨‍🔧</div><h3>Electrician pao</h3><p>Available local electricians ki list dekhein.</p></div>
+          <div class="step"><div class="step-num">01</div><div class="step-icon">🔎</div><h3>Kaam batao</h3><p>Service category aur apni location select karein.</p></div>
+          <div class="step"><div class="step-num">02</div><div class="step-icon">👨‍🔧</div><h3>Professional pao</h3><p>Available local professionals ki list dekhein.</p></div>
           <div class="step"><div class="step-num">03</div><div class="step-icon">📞</div><h3>Directly call karo</h3><p>Professional se price, timing aur kaam directly final karein.</p></div>
         </div>
       </div>
@@ -143,7 +142,7 @@
         <div>
           <div class="eyebrow">PROFESSIONALS KE LIYE</div>
           <h2>SahiMilo par apna kaam list karein.</h2>
-          <p>Agar aap electrician hain aur Sitamarhi Town ya Dumra mein electrical services dete hain, SahiMilo par register karein.</p>
+          <p>Agar aap Electrician, Plumber, AC Technician, Home Painter ya CCTV Technician hain aur Sitamarhi Town ya Dumra mein service dete hain, SahiMilo par register karein.</p>
           <ul class="check-list">
             <li>Apne area ke customers tak pahunch</li>
             <li>Profile photo, services aur experience show karein</li>
@@ -152,7 +151,7 @@
         </div>
         <div class="form-card">
           <h3>Create Professional Account</h3>
-          <p class="form-help">Pehle Gmail aur 6-digit SahiMilo PIN se account banayein. Login ke baad apna mobile number, WhatsApp, electrical services, service area, experience aur work details add karein.</p>
+          <p class="form-help">Pehle Gmail aur 6-digit SahiMilo PIN se account banayein. Login ke baad category, mobile number, WhatsApp, services, service area, experience aur work details add karein.</p>
           <ul class="check-list" style="color:var(--ink)">
             <li>Gmail + PIN se simple account</li>
             <li>Profile aur services kabhi bhi update karein</li>
